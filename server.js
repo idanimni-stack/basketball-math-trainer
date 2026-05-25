@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import mammoth from 'mammoth';
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = 'gemini-2.5-flash';
+// מודל עיקרי למשימות קלות (קוטה גדולה, מהיר וזול)
+// gemini-2.0-flash: 1,500 בקשות ביום ב-Free Tier (שמיש הרבה יותר מ-2.5)
+// gemini-2.5-flash-lite הוא המודל הטוב ביותר ל-free tier - מהיר ועם quota גדולה
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
+// גם לניתוח תמונות (מזהה כתב יד טוב)
+const GEMINI_MODEL_VISION = process.env.GEMINI_MODEL_VISION || 'gemini-2.5-flash-lite';
 
 if (!GEMINI_API_KEY) {
   console.error('❌ GEMINI_API_KEY חסר!');
@@ -37,42 +43,73 @@ app.get('/api/health', (req, res) => {
 });
 
 // ====================================================================
-// 🤖 פונקציית עזר - קריאה ל-Gemini
+// 🤖 פונקציית עזר - קריאה ל-Gemini עם retry logic
 // ====================================================================
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 async function callGemini(parts, options = {}) {
+  const modelName = options.model || GEMINI_MODEL;
   const body = {
     contents: [{ parts }],
     generationConfig: {
       temperature: options.temperature || 0.5,
       topP: 0.95,
       maxOutputTokens: options.maxOutputTokens || 8192,
-      responseMimeType: 'application/json',
-      thinkingConfig: { thinkingBudget: 0 }
+      responseMimeType: 'application/json'
     }
   };
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini API error: ${errorText}`);
+  // נסיונות חוזרים עם backoff לטיפול rate limits
+  const maxRetries = 4;
+  let lastError;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (response.status === 429) {
+        const errorText = await response.text();
+        const retryMatch = errorText.match(/retry in (\d+\.?\d*)s/i);
+        const waitSec = retryMatch ? parseFloat(retryMatch[1]) + 1 : Math.pow(2, attempt) * 2;
+        console.warn(`⚠️ Rate limit (נסיון ${attempt + 1}/${maxRetries}). ממתין ${waitSec.toFixed(1)}ש'...`);
+        if (attempt < maxRetries) {
+          await sleep(Math.min(waitSec * 1000, 30000));
+          continue;
+        }
+        throw new Error('רוב מדי בקשות ל-AI. המתן דקה ונסה שוב.');
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error: ${errorText.substring(0, 400)}`);
+      }
+
+      const data = await response.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('תגובה ריקה מהמודל');
+
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+        return JSON.parse(cleaned);
+      }
+    } catch (e) {
+      lastError = e;
+      if (attempt < maxRetries && (e.message.includes('Rate limit') || e.message.includes('429'))) {
+        await sleep(2000 * (attempt + 1));
+        continue;
+      }
+      throw e;
+    }
   }
-
-  const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('תגובה ריקה מהמודל');
-
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
-    return JSON.parse(cleaned);
-  }
+  throw lastError;
 }
 
 function detectMimeType(dataUrl) {
@@ -80,12 +117,48 @@ function detectMimeType(dataUrl) {
   if (dataUrl.startsWith('data:image/webp')) return 'image/webp';
   if (dataUrl.startsWith('data:image/heic')) return 'image/heic';
   if (dataUrl.startsWith('data:application/pdf')) return 'application/pdf';
-  if (dataUrl.startsWith('data:application/vnd.openxmlformats')) return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
   return 'image/jpeg';
 }
 
 function stripDataPrefix(dataUrl) {
   return dataUrl.replace(/^data:[^;]+;base64,/, '');
+}
+
+// 📄 ממיר קובץ לטקסט (תומך Word, txt) - Gemini לא תומך ב- docx ישירות
+async function extractTextFromFile(material) {
+  const { name, dataUrl } = material;
+  const base64 = stripDataPrefix(dataUrl);
+  const buffer = Buffer.from(base64, 'base64');
+  const lowerName = (name || '').toLowerCase();
+
+  // Word documents (.docx)
+  if (dataUrl.includes('wordprocessingml') ||
+      dataUrl.includes('application/msword') ||
+      lowerName.endsWith('.docx') ||
+      lowerName.endsWith('.doc')) {
+    try {
+      const result = await mammoth.extractRawText({ buffer });
+      return { type: 'text', content: result.value, source: name };
+    } catch (e) {
+      console.error(`שגיאה בהמרת Word: ${name}`, e.message);
+      throw new Error(`לא הצלחתי לקרוא את הקובץ ${name}. נסה להמיר אותו ל-PDF או להעתיק את התוכן לשדה הטקסט החופשי.`);
+    }
+  }
+
+  // קבצי טקסט רגילים
+  if (dataUrl.startsWith('data:text/') ||
+      lowerName.endsWith('.txt') ||
+      lowerName.endsWith('.md')) {
+    return { type: 'text', content: buffer.toString('utf-8'), source: name };
+  }
+
+  // PDF או תמונה - שלח ניתית ל-Gemini
+  return {
+    type: 'media',
+    mimeType: detectMimeType(dataUrl),
+    data: base64,
+    source: name
+  };
 }
 
 // ====================================================================
@@ -133,21 +206,36 @@ app.post('/api/create-study-plan', apiLimiter, async (req, res) => {
 
 ${freeText ? `\n📝 טקסט חופשי שהוזן:\n${freeText}\n` : ''}`;
 
-    const parts = [{ text: analysisPrompt }];
+    // עיבוד הקבצים: תומך Word הפוך לטקסט, תמונות/PDF מועברות כ-media
+    let extractedTexts = '';
+    const mediaParts = [];
 
-    // הוסף את הקבצים שהועלו
     if (materials && materials.length > 0) {
       for (const mat of materials) {
-        if (mat.dataUrl) {
-          parts.push({
-            inline_data: {
-              mime_type: detectMimeType(mat.dataUrl),
-              data: stripDataPrefix(mat.dataUrl)
-            }
-          });
+        if (!mat.dataUrl) continue;
+        try {
+          const extracted = await extractTextFromFile(mat);
+          if (extracted.type === 'text') {
+            extractedTexts += `\n\n=== תוכן מהקובץ "${extracted.source}" ===\n${extracted.content}`;
+          } else {
+            mediaParts.push({
+              inline_data: { mime_type: extracted.mimeType, data: extracted.data }
+            });
+          }
+        } catch (err) {
+          console.error(`שגיאה בעיבוד ${mat.name}:`, err.message);
+          // ממשיך לקבצים אחרים גם אם אחד נכשל
         }
       }
     }
+
+    // בניה מחדש של ה-prompt עם הטקסט שחולץ
+    let finalPrompt = analysisPrompt;
+    if (extractedTexts) {
+      finalPrompt += `\n\n📄 תוכן שחולץ מקבצים שהועלו:\n${extractedTexts}`;
+    }
+
+    const parts = [{ text: finalPrompt }, ...mediaParts];
 
     const analysis = await callGemini(parts, { temperature: 0.3, maxOutputTokens: 8192 });
 
@@ -155,7 +243,13 @@ ${freeText ? `\n📝 טקסט חופשי שהוזן:\n${freeText}\n` : ''}`;
     console.log(`🎯 מייצר שאלות ל-${analysis.topics.length} נושאים`);
 
     const questionsByTopic = {};
-    for (const topic of analysis.topics) {
+    // עיבוד מקבילי של 3 נושאים בבת אחת להאצת התהליך
+    const topicChunks = [];
+    for (let i = 0; i < analysis.topics.length; i += 3) {
+      topicChunks.push(analysis.topics.slice(i, i + 3));
+    }
+
+    async function generateQuestionsForTopic(topic) {
       const questionsPrompt = `אתה מורה ל${subject} בכיתה ${studentGrade || 'יסודי'}.
 צור 12 שאלות תרגול לנושא: "${topic.name}" (${topic.nameInOriginalLanguage || topic.name})
 תת-נושאים: ${topic.subtopics.join(', ')}
@@ -197,6 +291,12 @@ ${freeText ? `\n📝 טקסט חופשי שהוזן:\n${freeText}\n` : ''}`;
         console.error(`  ✗ ${topic.name}: ${e.message}`);
         questionsByTopic[topic.id] = [];
       }
+    }
+
+    // מריץ במקביל ג'צונקים של 3
+    for (const chunk of topicChunks) {
+      await Promise.all(chunk.map(t => generateQuestionsForTopic(t)));
+      await sleep(1500); // מנוחה בין ג'צונקים
     }
 
     // שלב 3: בניית תוכנית האימונים לפי תאריך
