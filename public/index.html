@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#FF6B35"/>
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF6B35'/><path d='M50 5v90M5 50h90M25 15a40 40 0 0 1 0 70M75 15a40 40 0 0 0 0 70' stroke='%231a1a1a' stroke-width='4' fill='none'/></svg>"/>
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FF6B35'/><path d='M50 5v90M5 50h90M25 15a40 40 0 0 1 0 70M75 15a40 40 0 0 0 0 70' stroke='%231a1a1a' stroke-width='4' fill='none'/></svg>"/>
-<title>אימון סל - מתמטיקה לאלופים</title>
+<title>🏀 אימון סל - מאמן הלמידה האישי</title>
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body {
@@ -25,713 +25,1535 @@ html, body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.app-header {
-  position: sticky; top: 0; z-index: 50;
-  background-color: rgba(26,26,26,0.95);
-  border-bottom: 4px solid #FF6B35;
-  padding: 12px 20px;
-  display: flex; justify-content: space-between; align-items: center;
-  padding-top: calc(12px + env(safe-area-inset-top));
+/* 🔢 LTR support for numbers and math */
+.num, .math, .ltr {
+  unicode-bidi: isolate;
+  direction: ltr;
+  display: inline-block;
 }
-.app-title {
-  color: #FF6B35; font-size: 22px; font-weight: 900; margin: 0;
-  text-shadow: 1px 1px 0 #000;
+.math-block {
+  direction: ltr;
+  text-align: center;
+  unicode-bidi: isolate-override;
 }
-@media(min-width: 700px) { .app-title { font-size: 28px; } }
-.user-status {
-  color: #fff; font-size: 16px; font-weight: bold;
+[dir="ltr"] {
+  unicode-bidi: isolate;
 }
-@media(min-width: 700px) { .user-status { font-size: 20px; } }
-
-.app-container {
-  max-width: 900px; margin: 20px auto; padding: 0 15px;
-}
-.court-card {
-  background-color: rgba(255,255,255,0.97);
-  border-radius: 25px; border: 4px solid #1a1a1a;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  padding: 25px 20px; position: relative; overflow: hidden;
+.english-text {
+  direction: ltr;
+  display: inline-block;
+  unicode-bidi: isolate;
 }
 
-.btn-large {
-  font-size: 20px; font-weight: 700; padding: 16px 28px; border-radius: 35px;
-  cursor: pointer; border: 3px solid #1a1a1a; box-shadow: 0 5px 0 #1a1a1a;
-  transition: transform 0.1s, box-shadow 0.1s;
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Buttons */
+.btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 56px;
+  transition: transform 0.1s;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
   font-family: inherit;
-  display: inline-flex; align-items: center; justify-content: center; gap: 12px; text-align: center;
-  min-height: 60px; min-width: 60px;
-  touch-action: manipulation; user-select: none; -webkit-touch-callout: none;
 }
-@media(min-width: 700px) { .btn-large { font-size: 24px; padding: 18px 32px; } }
-.btn-large:active { transform: translateY(5px); box-shadow: 0 0 0 #1a1a1a; }
-.btn-large:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: 0 2px 0 #1a1a1a; transform: translateY(3px); }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: #FF6B35; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.btn-secondary { background: white; color: #FF6B35; border: 3px solid #FF6B35; }
+.btn-success { background: #2d8f3f; color: white; }
+.btn-danger { background: #DC143C; color: white; }
+.btn-dark { background: #1a1a1a; color: white; }
+.btn-large { font-size: 22px; padding: 18px 32px; min-height: 64px; }
+.btn-full { width: 100%; }
 
-.btn-orange { background-color: #FF6B35; color: #fff; }
-.btn-black { background-color: #1a1a1a; color: #fff; border: 3px solid #FF6B35; box-shadow: 0 5px 0 #FF6B35; }
-.btn-white { background-color: #fff; color: #1a1a1a; border: 3px solid #1a1a1a; }
-.btn-green { background-color: #28a745; color: #fff; border: 3px solid #1a1a1a; box-shadow: 0 5px 0 #1a1a1a; }
-.btn-red { background-color: #dc3545; color: #fff; border: 3px solid #1a1a1a; box-shadow: 0 5px 0 #1a1a1a; }
-
-.topic-card {
-  background: #fff; border: 3px solid #1a1a1a; border-radius: 20px; padding: 25px 15px;
-  cursor: pointer; text-align: center; font-size: 22px; font-weight: bold;
-  transition: transform 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  touch-action: manipulation; user-select: none;
+input, textarea, select {
+  font-family: inherit;
+  font-size: 18px;
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
-.topic-card:active { transform: scale(0.96); border-color: #FF6B35; }
-
-.fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 8px; font-weight: bold; }
-.fraction span:first-child { border-bottom: 3px solid #1a1a1a; padding: 0 5px; }
-.fraction span:last-child { padding: 0 5px; }
-
-input[type="text"], input[type="number"], input[type="date"] {
-  font-family: inherit; font-size: 22px; padding: 14px 18px;
-  border-radius: 15px; border: 3px solid #1a1a1a; text-align: center; width: 100%;
-  background: #fff; color: #1a1a1a;
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #FF6B35;
 }
-input:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 10px rgba(255,107,53,0.5); }
 
-.upload-area {
-  border: 3px dashed #FF6B35; border-radius: 15px; padding: 20px; text-align: center;
-  background: #fff5f0; cursor: pointer; margin-top: 12px; width: 100%;
-  touch-action: manipulation; user-select: none;
-  display: block;
+/* Cards */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  margin: 12px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.upload-area:active { background: #ffe4d6; }
-
-.feedback-box {
-  border-radius: 15px; padding: 18px; margin-top: 18px; font-size: 20px; font-weight: bold; display: none;
-  border: 3px solid #1a1a1a;
+.card-orange { border: 3px solid #FF6B35; }
+.card-highlight {
+  background: linear-gradient(135deg, #FF6B35 0%, #FF9558 100%);
+  color: white;
 }
-.feedback-correct { background: #d4edda; color: #155724; border-color: #28a745; }
-.feedback-wrong { background: #f8d7da; color: #721c24; border-color: #dc3545; }
 
-.bar-container { width: 100%; background: #fff; border: 3px solid #1a1a1a; border-radius: 20px; height: 28px; overflow: hidden; margin-top: 5px; position: relative; }
-.bar-fill { height: 100%; background-color: #FF6B35; transition: width 0.5s; position: relative; }
+h1 { font-size: 28px; margin: 10px 0; }
+h2 { font-size: 24px; margin: 10px 0; }
+h3 { font-size: 20px; margin: 8px 0; }
 
+/* Header with student selector */
+.header {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.student-pill {
+  background: #FF6B35;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Plan cards */
 .plan-card {
-  background: linear-gradient(135deg, #fff, #f8f9fa); border: 4px solid #FF6B35; border-radius: 20px;
-  padding: 20px; margin-bottom: 18px; box-shadow: 0 6px 12px rgba(255,107,53,0.2);
-  position: relative; overflow: hidden;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 10px 0;
+  border-right: 5px solid #FF6B35;
+  cursor: pointer;
+  transition: transform 0.1s;
 }
-.plan-card-done { border-color: #28a745; background: #f0fff4; box-shadow: 0 6px 12px rgba(40,167,69,0.2); }
+.plan-card:active { transform: scale(0.98); }
+.plan-card.active { background: linear-gradient(135deg, #FF6B35 0%, #FF9558 100%); color: white; }
 
-.radio-btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.radio-btn {
-  border: 3px solid #1a1a1a; border-radius: 15px; padding: 12px 18px; background: #fff;
-  font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.2s;
-  min-height: 50px; touch-action: manipulation; user-select: none;
+/* Question display */
+.question-box {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  margin: 16px 0;
+  border: 3px solid #FF6B35;
+  text-align: center;
 }
-.radio-btn.selected { background: #FF6B35; color: #fff; }
-
-.day-check {
-  width: 48px; height: 48px; border: 3px solid #1a1a1a; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;
-  cursor: pointer; background: #fff; transition: all 0.2s;
-  touch-action: manipulation; user-select: none;
+.question-text {
+  font-size: 22px;
+  line-height: 1.6;
+  margin-bottom: 16px;
 }
-.day-check.selected { background: #dc3545; color: #fff; }
-
-.smart-reminder {
-  background-color: #1a1a1a; color: #fff; padding: 14px; border-radius: 15px;
-  margin-bottom: 18px; text-align: center; font-size: 18px; font-weight: bold;
-  border: 2px solid #FF6B35;
+.question-math {
+  font-size: 36px;
+  font-weight: bold;
+  color: #FF6B35;
+  margin: 16px 0;
+  direction: ltr;
+  unicode-bidi: isolate-override;
+  font-family: 'Courier New', monospace;
 }
 
+/* Fraction display */
+.fraction {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 4px;
+  font-size: 0.85em;
+  direction: ltr;
+}
+.fraction span:first-child {
+  border-bottom: 3px solid currentColor;
+  padding-bottom: 2px;
+  min-width: 30px;
+}
+.fraction span:last-child {
+  padding-top: 2px;
+  min-width: 30px;
+}
+
+/* Answer buttons */
+.answer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+.answer-btn {
+  background: white;
+  border: 3px solid #FF6B35;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 60px;
+  touch-action: manipulation;
+}
+.answer-btn:active { background: #FFE4D6; }
+.answer-btn.correct { background: #2d8f3f; color: white; border-color: #2d8f3f; }
+.answer-btn.wrong { background: #DC143C; color: white; border-color: #DC143C; }
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF6B35, #FF9558);
+  transition: width 0.3s;
+}
+
+/* Upload area */
+.upload-zone {
+  border: 3px dashed #FF6B35;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  background: #FFF5F0;
+  cursor: pointer;
+  margin: 12px 0;
+}
+
+/* Calendar grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+.cal-day {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+  border: 2px solid #ddd;
+  font-size: 13px;
+}
+.cal-day.done { background: #2d8f3f; color: white; border-color: #2d8f3f; }
+.cal-day.today { background: #FF6B35; color: white; border-color: #FF6B35; box-shadow: 0 4px 12px rgba(255,107,53,0.4); }
+.cal-day.exam { background: #DC143C; color: white; border-color: #DC143C; }
+
+/* Modal */
 .modal-overlay {
-  position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7);
-  z-index: 1000; display:flex; justify-content:center; align-items:center; padding: 20px;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
-.modal-content {
-  background:#fff; border:4px solid #FF6B35; border-radius:20px; width:100%; max-width:480px;
-  padding:25px; text-align:center; position:relative;
-}
-
-.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.menu-grid .btn-large { flex-direction: column; padding: 18px 10px; min-height: 110px; font-size: 18px; }
-.menu-grid .btn-large > span:first-child { font-size: 38px; margin-bottom: 4px; }
-
-.qbox {
-  font-size: 26px; font-weight: bold; color: #1a1a1a; text-align: center;
-  background:#fff5f0; padding:22px; border-radius:20px; width:100%;
-  border:3px solid #ffe4d6; margin-bottom: 18px;
-}
-@media(min-width: 700px) { .qbox { font-size: 32px; } }
-
-.q-options { display:flex; justify-content:center; gap:14px; flex-wrap:wrap; width:100%; }
-.q-options .btn-large { font-size: 24px; min-width: 130px; flex: 0 1 auto; }
-
-.session-stats-bar {
-  display:flex; gap:15px; flex-wrap: wrap; font-size:16px; font-weight:bold;
+.modal {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #FF6B35; border-radius: 3px; }
+/* Loader */
+.spinner {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #FFE4D6;
+  border-top-color: #FF6B35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Subject badge */
+.subject-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: bold;
+}
+.subj-math { background: #E3F2FD; color: #1976d2; }
+.subj-english { background: #F3E5F5; color: #7b1fa2; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s; }
+
+@keyframes confetti {
+  0% { transform: translateY(-100vh) rotate(0); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+.celebrate {
+  font-size: 48px;
+  text-align: center;
+  margin: 16px 0;
+  animation: bounce 0.6s ease-in-out;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: #eee;
+  border-radius: 12px;
+  padding: 4px;
+  margin: 12px 0;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 44px;
+}
+.tab.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+.empty-state .icon { font-size: 60px; margin-bottom: 16px; }
+
+/* iPad responsive */
+@media (min-width: 768px) {
+  #app { padding: 30px; }
+  h1 { font-size: 36px; }
+  .question-math { font-size: 48px; }
+}
 </style>
 </head>
 <body>
-<header class="app-header">
-  <h1 class="app-title">🏀 אימון סל - מתמטיקה לאלופים 🏀</h1>
-  <div id="user-status" class="user-status"></div>
-</header>
-<main class="app-container">
-  <section id="app-root" class="court-card"></section>
-</main>
+<div id="app"></div>
+
 <script>
-const qBank = [];
-function addQ(topic, subtopic, q, a, exp, diff, options=null) {
-  qBank.push({topic, subtopic, question: q, answer: a, explanation: exp, difficulty: diff, options});
-}
+// ============================================================
+// 🏀 STUDY TRAINER v2 - Main Application
+// ============================================================
 
-// Fractions - same denominator comparison
-for(let i=2; i<=10; i++) {
-  for(let j=1; j<i; j++) {
-    if(j+1 < i) {
-      addQ('fractions', 'comp_same_denom', `איזה שבר גדול יותר? <div class="fraction"><span>${j}</span><span>${i}</span></div> או <div class="fraction"><span>${j+1}</span><span>${i}</span></div>?`, `${j+1}/${i}`, `כאשר המכנה זהה, מסתכלים על המונה. המונה הגדול יותר הוא השבר הגדול יותר. ${j+1} גדול מ-${j}.`, 1, [`${j}/${i}`, `${j+1}/${i}`, 'שווים']);
-    }
-  }
-}
-// Same numerator
-for(let i=2; i<=6; i++) {
-  for(let j=i+1; j<=9; j++) {
-    addQ('fractions', 'comp_same_num', `איזה שבר גדול יותר? <div class="fraction"><span>2</span><span>${i}</span></div> או <div class="fraction"><span>2</span><span>${j}</span></div>?`, `2/${i}`, `כאשר המונים זהים, המכנה הקטן מציין חלקים גדולים יותר, ולכן השבר גדול יותר.`, 2, [`2/${i}`, `2/${j}`, 'שווים']);
-  }
-}
-// Equivalent
-[['1/2','3/6'],['1/3','2/6'],['1/4','2/8'],['3/4','6/8'],['2/5','4/10']].forEach(pair => {
-  addQ('fractions', 'equivalent', `האם השברים <div class="fraction"><span>${pair[0].split('/')[0]}</span><span>${pair[0].split('/')[1]}</span></div> ו- <div class="fraction"><span>${pair[1].split('/')[0]}</span><span>${pair[1].split('/')[1]}</span></div> שווים?`, `כן`, `כן, אם נרחיב או נצמצם שבר אחד באותו מספר במונה ובמכנה, נקבל את השני.`, 2, ['כן', 'לא']);
-});
-// Addition
-for(let i=3; i<=8; i++) {
-  for(let j=1; j<i-1; j++) {
-    addQ('fractions', 'addition', `פתור: <div class="fraction"><span>${j}</span><span>${i}</span></div> + <div class="fraction"><span>1</span><span>${i}</span></div> = ?`, `${j+1}/${i}`, `בחיבור שברים עם מכנה זהה, מחברים את המונים והמכנה נשאר זהה. ${j}+1=${j+1}.`, 1, [`${j+1}/${i}`, `${j+1}/${i+i}`, `${j}/${i}`]);
-  }
-}
-// Part of quantity
-[{t:12,f:1,d:3,a:4},{t:20,f:1,d:4,a:5},{t:30,f:1,d:5,a:6},{t:15,f:2,d:3,a:10},{t:24,f:3,d:4,a:18}].forEach(p => {
-  addQ('fractions', 'part_of_quantity', `בקבוצה ${p.t} שחקנים. <div class="fraction"><span>${p.f}</span><span>${p.d}</span></div> מהם על הספסל. כמה שחקנים על הספסל?`, `${p.a}`, `מחלקים את ${p.t} ב-${p.d} ומכפילים ב-${p.f}. = ${p.a}.`, 3);
-});
-
-// Natural numbers
-[10,100,1000].forEach(mult => {
-  for(let i=2; i<=25; i+=3) {
-    addQ('natural', 'mult_10_100', `פתור: ${i} × ${mult} = ?`, `${i*mult}`, `בכפל ב-${mult}, מוסיפים ${mult.toString().length-1} אפסים למספר המקורי.`, 1);
-    if(i < 10) addQ('natural', 'div_10_100', `פתור: ${i*mult*10} ÷ 10 = ?`, `${i*mult}`, `בחילוק ב-10, מורידים אפס אחד.`, 1);
-  }
-});
-for(let i=12; i<=45; i+=5) {
-  for(let j=2; j<=9; j+=2) {
-    addQ('natural', 'vertical_mult', `פתור: ${i} × ${j} = ?`, `${i*j}`, `כפל במאונך: אחדות ${i%10}×${j}, עשרות ${Math.floor(i/10)*10}×${j}, מחברים.`, 2);
-  }
-}
-addQ('natural', 'order_of_op', `פתור: 5 + 3 × 4 = ?`, `17`, `כפל קודם לחיבור: 3×4=12. ואז 5+12=17.`, 2);
-addQ('natural', 'order_of_op', `פתור: (5 + 3) × 4 = ?`, `32`, `סוגריים קודמים: 5+3=8. אז 8×4=32.`, 2);
-addQ('natural', 'word_prob', `לקבוצת כדורסל תקציב של 50,000 ש"ח. קנו כדורים ומדים ב-15,000 ש"ח. כמה נשאר?`, `35000`, `50,000-15,000=35,000.`, 2);
-addQ('natural', 'word_prob', `באולם כדורסל יש 4 יציעים. בכל יציע 2,000 אוהדים. כמה אוהדים בסה"כ?`, `8000`, `4×2,000=8,000 אוהדים.`, 2);
-addQ('natural', 'word_prob', `דני קלע 3 שלשות (3 נק' כל אחת), ורון קלע 4 סלים רגילים (2 נק' כל אחד). למי יותר נקודות?`, `דני`, `דני: 3×3=9. רון: 4×2=8. לדני יותר.`, 3, ['דני','רון','שווה']);
-addQ('natural', 'word_prob', `המשחק מחולק ל-4 רבעים. כל רבע 10 דקות. כמה דקות במשחק?`, `40`, `4×10=40 דקות.`, 1);
-
-// Geometry with SVG
-const shapes = [{w:5,h:4,a:20,p:18},{w:10,h:2,a:20,p:24},{w:6,h:6,a:36,p:24},{w:7,h:3,a:21,p:20}];
-shapes.forEach(s => {
-  const name = s.w===s.h ? 'ריבוע' : 'מלבן';
-  const svg = `<br><svg width='120' height='80'><rect x='10' y='10' width='${s.w*10}' height='${s.h*10}' fill='%23FF6B35' fill-opacity='0.2' stroke='%23FF6B35' stroke-width='4'/><text x='${s.w*5}' y='${s.h*10+25}' font-size='18' fill='%23000' font-weight='bold'>${s.w}</text><text x='${s.w*10+15}' y='${s.h*5+15}' font-size='18' fill='%23000' font-weight='bold'>${s.h}</text></svg>`;
-  addQ('geometry', 'area', `מה השטח של ה${name} הבא? (סמ"ר)${svg}`, `${s.a}`, `שטח=צלע×צלע סמוכה. ${s.w}×${s.h}=${s.a}.`, 2);
-  addQ('geometry', 'perimeter', `מה ההיקף של ה${name} הבא? (ס"מ)${svg}`, `${s.p}`, `היקף=סכום כל הצלעות. ${s.w}+${s.w}+${s.h}+${s.h}=${s.p}.`, 2);
-});
-addQ('geometry', 'angles', `איזו זווית בפינת מגרש הכדורסל?`, `ישרה`, `בפינת מלבן זווית ישרה (90°).`, 1, ['ישרה','חדה','קהה','שטוחה']);
-addQ('geometry', 'sides', `קווי האורך של המגרש (הארוכים) הם קווים...`, `מקבילים`, `צלעות נגדיות במלבן מקבילות.`, 1, ['מקבילים','מאונכים','נחתכים']);
-addQ('geometry', 'diagonals', `כמה אלכסונים אפשר למתוח במלבן?`, `2`, `במלבן בדיוק 2 אלכסונים.`, 2, ['1','2','3','4']);
-
-// Random batch
-for(let k=0; k<25; k++){
-  let n1 = Math.floor(Math.random()*80)+10;
-  let n2 = Math.floor(Math.random()*80)+10;
-  addQ('natural', 'add_sub', `פתור: ${n1+n2} - ${n1} = ?`, `${n2}`, `חיסור פשוט.`, 1);
-  let n3 = Math.floor(Math.random()*900)+100;
-  let n4 = Math.floor(Math.random()*900)+100;
-  addQ('natural', 'add_sub_large', `פתור: ${n3} + ${n4} = ?`, `${n3+n4}`, `חיבור במאונך.`, 3);
-}
-
-let state = {
-  name: '', score: 0, streak: 0, medals: [], testCompleted: false,
-  initialScores: { fractions: 0, natural: 0, geometry: 0 },
-  currentScores: { fractions: 0, natural: 0, geometry: 0 },
-  initialLevel: { fractions: 1, natural: 1, geometry: 1 },
-  level: { fractions: 1, natural: 1, geometry: 1 },
-  history: [], plan: null
+// ============================================================
+// 💾 DATA MODEL
+// ============================================================
+const DEFAULT_STATE = {
+  students: {},        // { studentId: { name, avatar, grade, plans: {planId: {...}} } }
+  activeStudentId: null,
+  activePlanId: null
 };
 
-const topicsHebrew = { 'fractions':'שברים', 'natural':'מספרים טבעיים', 'geometry':'גיאומטריה', 'mixed':'מעורב כללי' };
-const phaseNames = { 'יסודות':'שלב 1: חימום על המגרש', 'חיזוק':'שלב 2: אימוני כוח', 'שיא':'שלב 3: משחקי ליגה' };
+let state = loadState();
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('basketMathChampionsV5');
-    if (saved) {
-      state = JSON.parse(saved);
-      if(!state.currentScores) state.currentScores = {...state.initialScores};
-    }
-  } catch(e) {}
+    const raw = localStorage.getItem('studyTrainerV2');
+    if (raw) return { ...DEFAULT_STATE, ...JSON.parse(raw) };
+  } catch (e) { console.error('Load state error:', e); }
+  return { ...DEFAULT_STATE };
 }
+
 function saveState() {
-  try { localStorage.setItem('basketMathChampionsV5', JSON.stringify(state)); } catch(e) {}
-  updateHeader();
+  localStorage.setItem('studyTrainerV2', JSON.stringify(state));
 }
 
-const root = document.getElementById('app-root');
-
-function updateHeader() {
-  const el = document.getElementById('user-status');
-  if(state.name) el.innerHTML = `MVP: ${state.name} | 🏆 ${state.score}`;
-  else el.innerHTML = '';
+function newId(prefix = 'id') {
+  return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
 }
 
-function renderLogin() {
-  root.innerHTML = `
-    <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding: 10px;">
-      <div style="font-size:80px; line-height:1; margin-bottom:10px;">🏀</div>
-      <h1 style="font-size: 38px; color: #1a1a1a; margin:0 0 15px 0;">עולים למגרש!</h1>
-      <p style="font-size: 20px; color: #333; margin: 0 0 25px 0;">איך קוראים לשחקן שלנו?</p>
-      <input type="text" id="playerNameInput" autocomplete="given-name" enterkeyhint="done" placeholder="הקלד את שמך כאן..." style="width: 100%; max-width: 400px; margin-bottom: 25px;" onkeypress="if(event.key==='Enter') doLogin()">
-      <button class="btn-large btn-orange" style="font-size:24px;" onclick="doLogin()">כדור ראשון שלי! ⛹️‍♂️</button>
-      <p style="font-size: 14px; color: #666; margin-top: 25px; padding: 12px; background: #fff5f0; border-radius: 12px; border: 1px solid #FF6B35;">💡 טיפ: ניתן להוסיף את האפליקציה למסך הבית של ה-iPad - לחץ על כפתור השיתוף בספארי ובחר 'הוסף למסך הבית' לחוויה מיטבית</p>
-    </div>
-  `;
-  setTimeout(()=>{ const i=document.getElementById('playerNameInput'); if(i) i.focus(); }, 100);
+function getActiveStudent() {
+  return state.activeStudentId ? state.students[state.activeStudentId] : null;
+}
+function getActivePlan() {
+  const s = getActiveStudent();
+  return (s && state.activePlanId) ? s.plans[state.activePlanId] : null;
 }
 
-function doLogin() {
-  const name = document.getElementById('playerNameInput').value.trim();
-  if(!name) { alert('חובה להזין שם!'); return; }
-  state.name = name;
-  saveState();
-  if(!state.plan) renderPlanSetup();
-  else renderMenu();
+// ============================================================
+// 🎨 RENDERING UTILITIES
+// ============================================================
+const $ = (sel) => document.querySelector(sel);
+const app = document.getElementById('app');
+
+function render(html) {
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
 }
 
-let tempDuration = 15;
-let tempRestDays = [6];
-function renderPlanSetup() {
-  root.innerHTML = `
-    <div style="padding: 5px;">
-      <h2 style="font-size: 28px; color: #1a1a1a; margin: 0 0 15px 0; text-align:center;">🏀 ${state.name}, בוא נכין תוכנית מנצחת!</h2>
-      <div style="background:#fff; padding:20px; border-radius:20px; border:3px solid #1a1a1a;">
-        <h3 style="margin:0 0 10px 0; font-size:20px;">📅 מתי המבחן שלך?</h3>
-        <input type="date" id="examDateInput" style="margin-bottom:18px;">
-        <h3 style="font-size:20px; margin:0 0 10px 0;">⏱️ כמה זמן אתה רוצה להתאמן בכל יום?</h3>
-        <div class="radio-btn-group" style="margin-bottom:18px;">
-          <div class="radio-btn" onclick="setTempDuration(10, this)">10 דק'</div>
-          <div class="radio-btn selected" onclick="setTempDuration(15, this)">15 דק' ⭐</div>
-          <div class="radio-btn" onclick="setTempDuration(20, this)">20 דק'</div>
-          <div class="radio-btn" onclick="setTempDuration(25, this)">25 דק'</div>
-        </div>
-        <h3 style="font-size:20px; margin:0 0 10px 0;">📆 ימי מנוחה (לא מתאמן)?</h3>
-        <div style="display:flex; gap:8px; justify-content:center; margin-bottom:20px; direction:rtl; flex-wrap:wrap;">
-          ${['א','ב','ג','ד','ה','ו','ש'].map((d,i) => `<div class="day-check ${i===6?'selected':''}" onclick="toggleTempRest(${i}, this)">${d}'</div>`).join('')}
-        </div>
-        <button class="btn-large btn-orange" style="width:100%;" onclick="createPlan()">בנה לי תוכנית! 🏀</button>
-      </div>
-    </div>
-  `;
-  const tmrw = new Date();
-  tmrw.setDate(tmrw.getDate() + 14);
-  document.getElementById('examDateInput').value = tmrw.toISOString().split('T')[0];
-}
-
-function setTempDuration(val, el) {
-  tempDuration = val;
-  el.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-}
-function toggleTempRest(dayIdx, el) {
-  if(tempRestDays.includes(dayIdx)) { tempRestDays = tempRestDays.filter(d => d !== dayIdx); el.classList.remove('selected'); }
-  else { tempRestDays.push(dayIdx); el.classList.add('selected'); }
-}
-
-function createPlan() {
-  const ed = document.getElementById('examDateInput').value;
-  if(!ed) return alert("בחר תאריך למבחן");
-  state.plan = {
-    examDate: ed, dailyDuration: tempDuration, restDays: tempRestDays,
-    planStartDate: new Date().toISOString().split('T')[0],
-    currentDay: 1, trainingPlan: [], lastSessionDate: null
-  };
-  if(state.testCompleted) generateTrainingPlan();
-  saveState();
-  renderMenu();
-}
-
-function shiftMissedDays() {
-  if(!state.plan || state.plan.trainingPlan.length === 0) return;
-  const todayStr = new Date().toISOString().split('T')[0];
-  let currIdx = state.plan.currentDay - 1;
-  if(currIdx >= state.plan.trainingPlan.length) return;
-  let expectedDate = state.plan.trainingPlan[currIdx].dateStr;
-  if (todayStr > expectedDate && state.plan.lastSessionDate !== todayStr) {
-    let d = new Date();
-    for(let i = currIdx; i < state.plan.trainingPlan.length; i++) {
-      while(state.plan.restDays.includes(d.getDay())) d.setDate(d.getDate()+1);
-      state.plan.trainingPlan[i].dateStr = d.toISOString().split('T')[0];
-      d.setDate(d.getDate()+1);
+// 🔢 פונקציה לפורמט מספרים ומתמטיקה בצורה נכונה ב-RTL
+function fmtMath(text) {
+  if (!text) return '';
+  // עוטף ביטויים מתמטיים ב-span LTR
+  return text.replace(/([\d+\-×÷*/=().\s]+)/g, (match) => {
+    if (match.trim().length > 0 && /[\d+\-×÷*/=]/.test(match)) {
+      return `<span class="num">${match}</span>`;
     }
-    saveState();
-  }
-}
-
-function generateTrainingPlan() {
-  if(!state.plan || !state.testCompleted) return;
-  const startD = new Date(state.plan.planStartDate);
-  const endD = new Date(state.plan.examDate);
-  const plan = [];
-  let curr = new Date(startD);
-  let dayNum = 1;
-  const dates = [];
-  while(curr <= endD) {
-    if(!state.plan.restDays.includes(curr.getDay())) dates.push(new Date(curr));
-    curr.setDate(curr.getDate()+1);
-  }
-  const total = Math.max(dates.length, 3);
-  const p1 = Math.ceil(total * 0.33);
-  const p2 = Math.ceil(total * 0.66);
-  const allTopics = ['fractions','natural','geometry'];
-  let phase1Idx = 0;
-  const getWeakest = () => {
-    let w = 'fractions', min = 100;
-    allTopics.forEach(t => { if(state.currentScores[t] < min) { min = state.currentScores[t]; w = t; } });
-    return w;
-  };
-  dates.forEach((dObj, idx) => {
-    let phase, topic, desc;
-    if (idx < p1) {
-      phase = 'יסודות'; topic = allTopics[phase1Idx % 3]; phase1Idx++;
-      desc = `סוקרים את כל המגרש - ${topicsHebrew[topic]}`;
-    } else if (idx < p2) {
-      phase = 'חיזוק';
-      topic = (Math.random() > 0.3) ? getWeakest() : allTopics[Math.floor(Math.random()*3)];
-      desc = `חיזוק שרירים בנושא ${topicsHebrew[topic]}`;
-    } else {
-      phase = 'שיא'; topic = 'mixed';
-      desc = `הכנה למשחק הגדול - תרגול משולב`;
-    }
-    let qCount = state.plan.dailyDuration === 10 ? 8 : (state.plan.dailyDuration === 15 ? 12 : 16);
-    if (idx === total - 1) {
-      phase = 'שיא'; topic = 'mixed';
-      desc = 'אימון קל אחרון לפני המבחן! 🏆';
-      qCount = 5;
-    }
-    plan.push({day: dayNum++, dateStr: dObj.toISOString().split('T')[0], phase, topic, desc, qCount});
+    return match;
   });
-  state.plan.trainingPlan = plan;
 }
 
-function getSmartReminder() {
-  if(!state.plan || !state.testCompleted) return "";
-  const today = new Date().toISOString().split('T')[0];
-  const exam = state.plan.examDate;
-  if (today === exam) return `🏆 ${state.name}, בהצלחה במבחן היום! אתה מוכן! 🔥`;
-  if (today > exam) return `🎉 איך היה המבחן? רוצה להמשיך לתרגל?`;
-  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1);
-  if (tomorrow.toISOString().split('T')[0] === exam) return `🚨 המבחן מחר! אימון קל אחרון 💪`;
-  if (state.plan.lastSessionDate === today) return `✅ כל הכבוד שתרגלת היום!`;
-  if (state.plan.lastSessionDate) {
-    const lastD = new Date(state.plan.lastSessionDate);
-    const tD = new Date(today);
-    const diff = (tD - lastD) / (1000*3600*24);
-    if (diff > 1) return `👋 פספסת לאחרונה - לא נורא! בוא נחזור לעניינים.`;
-  }
-  return `🏀 ${state.name}, האימון של היום מחכה לך! ${state.plan.dailyDuration} דקות וסיימת ⚡`;
-}
-
-function renderMenu() {
-  shiftMissedDays();
-  if(state.plan && state.plan.trainingPlan.length === 0 && state.testCompleted) {
-    generateTrainingPlan();
-    saveState();
-  }
-  const today = new Date().toISOString().split('T')[0];
-  const isCompletedToday = state.plan && state.plan.lastSessionDate === today;
-  const isExamPassed = state.plan && today > state.plan.examDate;
-  let todayCard = '';
-  if(!state.testCompleted) {
-    todayCard = `
-      <div class="plan-card" style="text-align:center;">
-        <h3 style="font-size:24px; margin:0 0 10px 0;">🎯 שלב ראשון: מוקדמות!</h3>
-        <p style="font-size:18px; margin:0 0 15px 0;">בוא נבדוק מה אתה כבר יודע, כדי לבנות תוכנית מושלמת.</p>
-        <button class="btn-large btn-orange" onclick="startDiagnostic()" style="width:100%;">התחל מבחן אבחון!</button>
-      </div>`;
-  } else if (isExamPassed) {
-    todayCard = `
-      <div class="plan-card plan-card-done" style="text-align:center;">
-        <h3 style="font-size:24px; margin:0 0 10px 0;">🎉 המבחן מאחורינו!</h3>
-        <p style="font-size:18px; margin:0;">כל הכבוד על ההשקעה!</p>
-      </div>`;
-  } else if (isCompletedToday) {
-    todayCard = `
-      <div class="plan-card plan-card-done" style="text-align:center;">
-        <h3 style="font-size:24px; margin:0 0 10px 0;">✅ סיימת את האימון של היום! 🎉</h3>
-        <p style="font-size:18px; margin:0;">🏆 לך תיהנה, נתראה מחר! 🏀</p>
-      </div>`;
-  } else {
-    const cur = state.plan.trainingPlan[state.plan.currentDay-1];
-    if(cur) {
-      const totalS = state.plan.trainingPlan.length;
-      const pct = Math.round(((state.plan.currentDay-1) / totalS) * 100);
-      todayCard = `
-        <div class="plan-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <h3 style="font-size:24px; margin:0;">🏀 האימון של היום</h3>
-            <span style="font-size:16px; background:#1a1a1a; color:#fff; padding:5px 12px; border-radius:10px;">יום ${state.plan.currentDay}/${totalS}</span>
-          </div>
-          <div class="bar-container" style="height:18px; margin:12px 0;">
-            <div class="bar-fill" style="width:${pct}%; background-color:#28a745;"></div>
-          </div>
-          <p style="font-size:20px; font-weight:bold; margin:5px 0;">💪 ${topicsHebrew[cur.topic]} • ${phaseNames[cur.phase]}</p>
-          <p style="font-size:16px; color:#666; margin:0 0 15px 0;">⏱️ ${state.plan.dailyDuration} דק' • 🎯 ${cur.qCount} תרגילים</p>
-          <button class="btn-large btn-green" onclick="showSessionIntro()" style="width:100%;">▶️ התחל אימון של היום!</button>
-        </div>`;
+function fmtFraction(str) {
+  // ממיר "1/2" ל-HTML של שבר
+  if (typeof str === 'string' && str.includes('/') && !str.includes(' ')) {
+    const [num, denom] = str.split('/');
+    if (num && denom && !isNaN(num) && !isNaN(denom)) {
+      return `<span class="fraction"><span>${num}</span><span>${denom}</span></span>`;
     }
   }
-  const reminder = getSmartReminder();
-  const reminderHTML = reminder ? `<div class="smart-reminder">${reminder}</div>` : '';
-  root.innerHTML = `
-    ${reminderHTML}
-    ${todayCard}
-    <h3 style="font-size:22px; margin:15px 0 10px 0;">תרגול חופשי</h3>
-    <div class="menu-grid">
-      <button class="btn-large btn-white" onclick="renderTopics()" ${!state.testCompleted ? 'disabled' : ''}>
-        <span>📋</span>אימון לפי נושא
+  return str;
+}
+
+function renderHeader() {
+  const student = getActiveStudent();
+  const plan = getActivePlan();
+  if (!student) return '';
+
+  return `
+    <div class="header">
+      <button class="student-pill" onclick="showStudentSelector()">
+        <span>${student.avatar || '🏀'}</span>
+        <span>${student.name}</span>
+        ${plan ? `<span style="opacity:0.8;font-weight:normal;font-size:13px;">| ${plan.subject}</span>` : ''}
+        <span style="opacity:0.7;">▼</span>
       </button>
-      <button class="btn-large btn-white" onclick="startPractice('mixed')" ${!state.testCompleted ? 'disabled' : ''}>
-        <span>🎲</span>משחק מעורב
-      </button>
-      <button class="btn-large btn-white" onclick="renderCalendar()" ${!state.testCompleted || !state.plan ? 'disabled' : ''}>
-        <span>📅</span>תוכנית האימונים
-      </button>
-      <button class="btn-large btn-black" onclick="renderReport()" ${!state.testCompleted ? 'disabled' : ''}>
-        <span>📈</span>המגרש שלי
-      </button>
+      <button class="icon-btn" onclick="showSettings()" title="הגדרות">⚙️</button>
     </div>
   `;
 }
 
-function showSessionIntro() {
-  const cur = state.plan.trainingPlan[state.plan.currentDay-1];
-  root.innerHTML = `
-    <div style="text-align:center; padding: 10px;">
-      <div style="font-size:70px; margin-bottom:10px;">🏀</div>
-      <h2 style="font-size: 32px; color: #1a1a1a; margin:0 0 10px 0;">יום ${cur.day} - ${topicsHebrew[cur.topic]}</h2>
-      <p style="font-size:20px; margin:10px 0 20px 0; color:#FF6B35; font-weight:bold;">${cur.desc}</p>
-      <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:20px; margin-bottom:25px;">
-        <div style="font-size:20px; margin-bottom:10px;">⏱️ זמן: <strong>${state.plan.dailyDuration} דק'</strong></div>
-        <div style="font-size:20px; margin-bottom:10px;">🎯 יעד: <strong>${cur.qCount} תרגילים</strong></div>
-        <div style="font-size:20px;">💪 שלב: <strong>${phaseNames[cur.phase]}</strong></div>
+// ============================================================
+// 🚪 ENTRY POINT
+// ============================================================
+function start() {
+  // אם אין תלמידים בכלל - מסך פתיחה
+  if (Object.keys(state.students).length === 0) {
+    return renderWelcomeScreen();
+  }
+  // אם לא נבחר תלמיד פעיל
+  if (!state.activeStudentId || !state.students[state.activeStudentId]) {
+    return renderStudentList();
+  }
+  const student = getActiveStudent();
+  // אם לתלמיד אין תוכניות
+  if (Object.keys(student.plans).length === 0) {
+    return renderPlanList();
+  }
+  // אם לא נבחרה תוכנית פעילה
+  if (!state.activePlanId || !student.plans[state.activePlanId]) {
+    return renderPlanList();
+  }
+  // יש הכל - מסך ראשי
+  return renderMainMenu();
+}
+
+// ============================================================
+// 👋 WELCOME SCREEN (First time)
+// ============================================================
+function renderWelcomeScreen() {
+  render(`
+    <div style="text-align:center; padding-top:20vh;">
+      <div style="font-size:80px;">🏀</div>
+      <h1 style="color:#1a1a1a; font-size:36px;">אימון סל</h1>
+      <p style="font-size:20px; color:#1a1a1a; margin-bottom:30px;">
+        מאמן הלמידה האישי שלך לכל מקצוע ולכל מבחן
+      </p>
+      <div class="card" style="max-width:400px; margin:0 auto;">
+        <h3>🎯 איך זה עובד?</h3>
+        <p style="text-align:right; line-height:1.8; font-size:16px;">
+          1️⃣ הוסף תלמיד (או יותר!)<br>
+          2️⃣ צור תוכנית למבחן (העלה חומר או הקלד נושאים)<br>
+          3️⃣ <span class="num">AI</span> מייצר תוכנית אישית עם <span class="num">10-15</span> דקות אימון יומי<br>
+          4️⃣ הילד מתרגל, מצלם פתרונות, מקבל פידבק
+        </p>
       </div>
-      <button class="btn-large btn-orange" style="font-size:26px; padding:18px 50px;" onclick="startDailySession()">התחל! 🔥</button>
+      <button class="btn btn-primary btn-large" style="margin-top:24px;" onclick="showAddStudentModal()">
+        ➕ הוסף תלמיד ראשון
+      </button>
     </div>
-  `;
+  `);
 }
 
-let isDailySession = false;
-function startDailySession() {
-  isDailySession = true;
-  const cur = state.plan.trainingPlan[state.plan.currentDay-1];
-  startPractice(cur.topic, cur.qCount);
-}
-
-function showDayModal(idx) {
-  const p = state.plan.trainingPlan[idx];
-  const stat = p.day < state.plan.currentDay ? '✅ הושלם בהצלחה' : (p.day === state.plan.currentDay ? '🟠 מחכה לך היום!' : '⚪ מתוכנן');
-  const mod = document.createElement('div');
-  mod.className = 'modal-overlay';
-  mod.innerHTML = `
-    <div class="modal-content">
-      <h2 style="font-size:26px; margin:0 0 10px 0;">יום ${p.day}</h2>
-      <div style="font-size:16px; color:#666; margin-bottom:12px;">${p.dateStr.split('-').reverse().join('/')}</div>
-      <div style="font-size:20px; font-weight:bold; margin-bottom:8px;">${topicsHebrew[p.topic]}</div>
-      <div style="font-size:18px; margin-bottom:10px;">${phaseNames[p.phase]}</div>
-      <div style="font-size:16px; color:#FF6B35; margin-bottom:18px;">${p.desc}</div>
-      <div style="font-size:20px; font-weight:bold; background:#f0f0f0; padding:10px; border-radius:10px; margin-bottom:18px;">${stat}</div>
-      <button class="btn-large btn-black" style="width:100%;" onclick="this.parentElement.parentElement.remove()">סגור</button>
+// ============================================================
+// 👨‍👩‍👧‍👦 STUDENT MANAGEMENT
+// ============================================================
+function renderStudentList() {
+  const studentsArr = Object.values(state.students);
+  render(`
+    <div style="text-align:center; padding-top:40px;">
+      <div style="font-size:60px;">🏀</div>
+      <h1>מי מתאמן היום?</h1>
     </div>
-  `;
-  document.body.appendChild(mod);
-}
-
-function renderCalendar() {
-  if(!state.plan) return;
-  shiftMissedDays();
-  root.innerHTML = `
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center; flex-wrap:wrap; gap:10px;">
-      <h2 style="font-size: 26px; color:#1a1a1a; margin:0;">📅 תוכנית האימונים</h2>
-      <button class="btn-large btn-white" style="padding:10px 20px; font-size:18px; min-height:50px;" onclick="renderMenu()">חזור ↩</button>
-    </div>
-    <div style="background:#fff; border-radius:20px; border:3px solid #1a1a1a; padding:15px;">
-      <div style="margin-bottom:12px; font-size:18px; font-weight:bold; color:#FF6B35; text-align:center;">🎯 המבחן ב- ${state.plan.examDate.split('-').reverse().join('/')} 🏆</div>
-      ${state.plan.trainingPlan.map((p, idx) => `
-        <div onclick="showDayModal(${idx})" style="cursor:pointer; padding:12px; border-bottom:2px solid #eee; display:flex; align-items:center; gap:12px; ${p.day === state.plan.currentDay ? 'background:#fff5f0; border:2px solid #FF6B35; border-radius:10px;' : ''}">
-          <span style="font-size:24px;">${p.day < state.plan.currentDay ? '✅' : (p.day === state.plan.currentDay ? '🟠' : '⚪')}</span>
-          <div style="flex:1;">
-            <div style="font-size:18px; font-weight:bold;">יום ${p.day} <span style="font-size:14px; color:#999; font-weight:normal;">(${p.dateStr.split('-').reverse().join('/')})</span></div>
-            <div style="color:#666; font-size:15px;">${topicsHebrew[p.topic]} • ${p.phase}</div>
+    <div style="max-width:500px; margin:20px auto;">
+      ${studentsArr.map(s => `
+        <div class="card" style="cursor:pointer; display:flex; align-items:center; gap:14px;" onclick="selectStudent('${s.id}')">
+          <div style="font-size:48px;">${s.avatar || '🏀'}</div>
+          <div style="flex:1; text-align:right;">
+            <div style="font-size:22px; font-weight:bold;">${s.name}</div>
+            <div style="color:#666; font-size:14px;">
+              ${s.grade ? `כיתה ${s.grade} | ` : ''}
+              <span class="num">${Object.keys(s.plans).length}</span> תוכניות
+            </div>
           </div>
-          ${p.day === state.plan.currentDay ? '<span style="font-weight:bold; color:#FF6B35; font-size:16px;">היום!</span>' : ''}
+          <button class="icon-btn" onclick="event.stopPropagation(); deleteStudent('${s.id}')" title="מחק">🗑️</button>
         </div>
       `).join('')}
+      <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="showAddStudentModal()">
+        ➕ הוסף תלמיד נוסף
+      </button>
     </div>
-  `;
+  `);
 }
 
-let sessionQueue = [];
-let currentQIndex = 0;
-let isDiagnostic = false;
-let sessionStats = { total: 0, correct: 0, startTime: 0 };
-
-function startDiagnostic() {
-  isDiagnostic = true; isDailySession = false;
-  const getQs = (t, count) => qBank.filter(q => q.topic === t && q.difficulty < 3).sort(() => 0.5 - Math.random()).slice(0, count);
-  sessionQueue = [...getQs('fractions', 4), ...getQs('natural', 4), ...getQs('geometry', 4)].sort(() => 0.5 - Math.random());
-  currentQIndex = 0;
-  sessionStats = { total: sessionQueue.length, correct: 0, startTime: Date.now() };
-  renderActiveQuestion();
+function showAddStudentModal() {
+  render(`
+    ${renderHeader()}
+    <div class="card">
+      <h2 style="text-align:center;">➕ תלמיד חדש</h2>
+      <div style="margin-top:16px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">שם התלמיד</label>
+        <input id="newStName" placeholder="לדוגמה: דני" autocomplete="given-name" />
+      </div>
+      <div style="margin-top:14px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">כיתה (אופציונלי)</label>
+        <input id="newStGrade" placeholder="לדוגמה: ד' או 4" inputmode="numeric" />
+      </div>
+      <div style="margin-top:14px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">בחר אווטר 🎨</label>
+        <div id="avatarPicker" style="display:flex; flex-wrap:wrap; gap:8px;">
+          ${['🏀','⚽','🏈','🎾','🏐','🦁','🐯','🐻','🦊','🐼','🚀','⭐','🎮','🎨','📚','🎯'].map((a,i) => `
+            <button class="btn ${i===0?'btn-primary':'btn-secondary'}" style="font-size:24px; padding:8px; min-width:50px; min-height:50px;"
+              onclick="document.querySelectorAll('#avatarPicker .btn').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-secondary'); }); this.classList.remove('btn-secondary'); this.classList.add('btn-primary'); document.getElementById('selectedAvatar').value='${a}'">${a}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="selectedAvatar" value="🏀" />
+      </div>
+      <div style="display:flex; gap:10px; margin-top:24px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="start()">ביטול</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="addStudent()">המשך ➡</button>
+      </div>
+    </div>
+  `);
+  setTimeout(() => { const i = $('#newStName'); if (i) i.focus(); }, 100);
 }
 
-function renderTopics() {
-  root.innerHTML = `
-    <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center; flex-wrap:wrap; gap:10px;">
-      <h2 style="font-size: 28px; color:#1a1a1a; margin:0;">בחר עמדת אימון</h2>
-      <button class="btn-large btn-white" style="padding:10px 20px; font-size:18px; min-height:50px;" onclick="renderMenu()">חזור ↩</button>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
-      <div class="topic-card" onclick="startPractice('fractions')">
-        <div style="font-size:50px; margin-bottom:8px;">🍕</div>
-        <div style="font-size:20px;">שברים</div>
-        <div style="font-size:15px; color:#FF6B35; margin-top:5px;">${state.currentScores.fractions}%</div>
-      </div>
-      <div class="topic-card" onclick="startPractice('natural')">
-        <div style="font-size:50px; margin-bottom:8px;">🔢</div>
-        <div style="font-size:20px;">מספרים</div>
-        <div style="font-size:15px; color:#FF6B35; margin-top:5px;">${state.currentScores.natural}%</div>
-      </div>
-      <div class="topic-card" onclick="startPractice('geometry')">
-        <div style="font-size:50px; margin-bottom:8px;">📐</div>
-        <div style="font-size:20px;">גיאומטריה</div>
-        <div style="font-size:15px; color:#FF6B35; margin-top:5px;">${state.currentScores.geometry}%</div>
-      </div>
-    </div>
-  `;
+function addStudent() {
+  const name = $('#newStName').value.trim();
+  if (!name) { alert('אנא הזן שם'); return; }
+  const grade = $('#newStGrade').value.trim();
+  const avatar = $('#selectedAvatar').value;
+
+  const id = newId('student');
+  state.students[id] = {
+    id, name, grade, avatar,
+    plans: {},
+    createdAt: new Date().toISOString()
+  };
+  state.activeStudentId = id;
+  state.activePlanId = null;
+  saveState();
+
+  // עבור ישר ליצירת תוכנית ראשונה
+  renderNewPlanScreen();
 }
 
-function startPractice(topic, count=10) {
-  isDiagnostic = false;
-  let available = topic === 'mixed' ? qBank : qBank.filter(q => q.topic === topic);
-  if(topic !== 'mixed') {
-    const lvl = state.level[topic] || 1;
-    const suited = available.filter(q => q.difficulty <= lvl);
-    if(suited.length > 5) available = suited;
-  }
-  sessionQueue = available.sort(() => 0.5 - Math.random()).slice(0, count);
-  currentQIndex = 0;
-  sessionStats = { total: sessionQueue.length, correct: 0, startTime: Date.now() };
-  renderActiveQuestion();
-}
-
-function renderActiveQuestion() {
-  if (currentQIndex >= sessionQueue.length) { finishSession(); return; }
-  const q = sessionQueue[currentQIndex];
-  const pct = ((currentQIndex) / sessionStats.total) * 100;
-  const min = Math.floor((Date.now() - sessionStats.startTime) / 60000);
-  let inputHTML = '';
-  if (q.options) {
-    inputHTML = `<div class="q-options">`;
-    q.options.forEach(opt => {
-      const d = opt.includes('/') ? `<div class="fraction" style="font-size:28px;"><span>${opt.split('/')[0]}</span><span>${opt.split('/')[1]}</span></div>` : opt;
-      inputHTML += `<button class="btn-large btn-white" onclick="checkAnswer('${opt}')">${d}</button>`;
-    });
-    inputHTML += `</div>`;
-  } else {
-    inputHTML = `
-      <div style="width: 100%; max-width:400px; margin: 18px auto;">
-        <input type="text" id="answerInput" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" placeholder="הקש תשובה..." dir="ltr" onkeypress="if(event.key==='Enter') document.getElementById('chkBtn').click();">
-        <button id="chkBtn" class="btn-large btn-orange" style="width:100%; margin-top:15px;" onclick="checkAnswer(document.getElementById('answerInput').value)">זרוק לסל! 🤾‍♂️</button>
-      </div>`;
-  }
-  root.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-      <div class="session-stats-bar">
-        <span>שאלה ${currentQIndex+1}/${sessionStats.total}</span>
-        <span style="color:#666;">⏱️ ${min} דק'</span>
-        <span style="color:#28a745;">🔥 ${sessionStats.correct}</span>
-      </div>
-      <button class="btn-large btn-white" style="padding:8px 18px; font-size:16px; min-height:44px;" onclick="renderMenu()">פסק זמן ⏸</button>
-    </div>
-    <div class="bar-container" style="background:#e9ecef; border:2px solid #ccc; height:20px; margin-bottom:18px;">
-      <div class="bar-fill" style="width:${pct}%; background-color:#FF6B35;"></div>
-    </div>
-    <div style="display:flex; flex-direction:column; align-items:center;">
-      <div class="qbox">${q.question}</div>
-      ${inputHTML}
-      <div style="margin-top:18px; width:100%; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;" id="uploadSection">
-        <label class="upload-area" style="flex:1; min-width:200px; max-width:280px;">
-          <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event)">
-          <span style="font-size:22px;">📸 צלם פתרון</span>
-        </label>
-        <label class="upload-area" style="flex:1; min-width:200px; max-width:280px;">
-          <input type="file" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
-          <span style="font-size:22px;">🖼️ בחר מגלריה</span>
-        </label>
-      </div>
-      <div id="imagePreview" style="display:none; text-align:center; margin-top:12px; width:100%;">
-        <img id="uploadedImg" src="" style="max-width:100%; max-height:200px; border-radius:15px; border:3px solid #1a1a1a;">
-        <div id="aiFeedbackLoader" style="color:#FF6B35; font-size:20px; font-weight:bold; margin-top:10px;">המאמן צופה במהלך... ⏱</div>
-      </div>
-      <div id="feedbackBox" class="feedback-box" style="width:100%;"></div>
-      <button id="nextBtn" class="btn-large btn-black" style="display:none; margin-top:20px; width:100%; max-width:400px;" onclick="renderActiveQuestion()">לזריקה הבאה ➡</button>
-    </div>
-  `;
-  if(!q.options) setTimeout(() => { const inp = document.getElementById('answerInput'); if(inp) inp.focus(); }, 300);
-}
-
-function checkAnswer(userAns) {
-  const q = sessionQueue[currentQIndex];
-  const cleanUser = userAns.toString().trim();
-  if(!cleanUser) return;
-  const isCorrect = cleanUser === q.answer;
-  q.userIsCorrect = isCorrect;
-  const fb = document.getElementById('feedbackBox');
-  fb.style.display = 'block';
-  const us = document.getElementById('uploadSection');
-  if(us) us.style.display = 'none';
-  if (isCorrect) {
-    sessionStats.correct++;
-    state.score += 10;
-    state.streak++;
+function selectStudent(studentId) {
+  state.activeStudentId = studentId;
+  const student = state.students[studentId];
+  const plans = Object.values(student.plans);
+  if (plans.length === 0) {
+    state.activePlanId = null;
+    renderPlanList();
+  } else if (plans.length === 1) {
+    state.activePlanId = plans[0].id;
     saveState();
-    fb.className = 'feedback-box feedback-correct';
-    fb.innerHTML = `שלשה מהקשת! 🎯 ${state.name}, מושלם! 💯<br><span style="font-size:18px; font-weight:normal;">${q.explanation}</span>`;
+    renderMainMenu();
   } else {
-    state.streak = 0;
+    state.activePlanId = null;
     saveState();
-    fb.className = 'feedback-box feedback-wrong';
-    let fa = q.answer;
-    if(fa.includes('/')) fa = `<div class="fraction"><span>${q.answer.split('/')[0]}</span><span>${q.answer.split('/')[1]}</span></div>`;
-    fb.innerHTML = `החטאה קלה, קורה גם לאלופים! 🏀<br>התשובה הנכונה: ${fa}<br><div style="font-size:18px; font-weight:normal; margin-top:12px; background:#fff; padding:12px; border-radius:10px; border:2px solid #dc3545;"><strong>ניתוח המהלך:</strong> ${q.explanation}</div>`;
+    renderPlanList();
   }
-  currentQIndex++;
-  const inputs = document.querySelectorAll('button:not(#nextBtn), input');
-  inputs.forEach(el => {
-    if(!el.textContent.includes('פסק זמן')) {
-      el.style.pointerEvents = 'none';
-      if(el.tagName==='BUTTON') el.style.opacity = '0.5';
+}
+
+function deleteStudent(studentId) {
+  if (!confirm(`האם למחוק את ${state.students[studentId].name}? כל הנתונים יימחקו.`)) return;
+  delete state.students[studentId];
+  if (state.activeStudentId === studentId) {
+    state.activeStudentId = null;
+    state.activePlanId = null;
+  }
+  saveState();
+  start();
+}
+
+function showStudentSelector() {
+  state.activeStudentId = null;
+  state.activePlanId = null;
+  saveState();
+  renderStudentList();
+}
+
+// ============================================================
+// 📚 PLAN MANAGEMENT
+// ============================================================
+function renderPlanList() {
+  const student = getActiveStudent();
+  const plansArr = Object.values(student.plans);
+  render(`
+    ${renderHeader()}
+    <div style="text-align:center; margin-top:20px;">
+      <h1>${student.avatar} התוכניות של ${student.name}</h1>
+    </div>
+    ${plansArr.length === 0 ? `
+      <div class="empty-state">
+        <div class="icon">📚</div>
+        <h2>אין עדיין תוכניות</h2>
+        <p>בוא ניצור תוכנית למבחן הראשון!</p>
+      </div>
+    ` : `
+      <div style="max-width:600px; margin:0 auto;">
+        ${plansArr.map(p => renderPlanCard(p)).join('')}
+      </div>
+    `}
+    <div style="max-width:600px; margin:20px auto;">
+      <button class="btn btn-primary btn-large btn-full" onclick="renderNewPlanScreen()">
+        ➕ צור תוכנית חדשה
+      </button>
+    </div>
+  `);
+}
+
+function renderPlanCard(plan) {
+  const examDate = new Date(plan.examDate);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const daysLeft = Math.max(0, Math.ceil((examDate - today) / (1000 * 60 * 60 * 24)));
+  const sessionsCompleted = Object.keys(plan.completedSessions || {}).length;
+  const totalSessions = (plan.trainingPlan || []).length;
+  const percent = totalSessions > 0 ? Math.round((sessionsCompleted / totalSessions) * 100) : 0;
+  const subjClass = plan.subject === 'אנגלית' || plan.subject === 'English' ? 'subj-english' : 'subj-math';
+
+  return `
+    <div class="plan-card" onclick="selectPlan('${plan.id}')">
+      <div style="display:flex; justify-content:space-between; align-items:start;">
+        <div style="flex:1;">
+          <span class="subject-badge ${subjClass}">${plan.subject}</span>
+          <h3 style="margin:8px 0;">${plan.name}</h3>
+          <div style="color:#666; font-size:14px;">
+            📅 מבחן בעוד <span class="num">${daysLeft}</span> ימים | <span class="num">${sessionsCompleted}/${totalSessions}</span> סשנים
+          </div>
+          <div class="progress-bar" style="margin-top:8px;">
+            <div class="progress-fill" style="width:${percent}%"></div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="event.stopPropagation(); deletePlan('${plan.id}')" title="מחק">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+
+function selectPlan(planId) {
+  state.activePlanId = planId;
+  saveState();
+  renderMainMenu();
+}
+
+function deletePlan(planId) {
+  const student = getActiveStudent();
+  if (!confirm(`למחוק את התוכנית "${student.plans[planId].name}"?`)) return;
+  delete student.plans[planId];
+  if (state.activePlanId === planId) state.activePlanId = null;
+  saveState();
+  renderPlanList();
+}
+
+// ============================================================
+// 🆕 NEW PLAN - Step 1: Basic info
+// ============================================================
+function renderNewPlanScreen() {
+  const student = getActiveStudent();
+  render(`
+    ${renderHeader()}
+    <div class="card card-orange">
+      <h2 style="text-align:center;">📚 תוכנית חדשה ל${student.name}</h2>
+      <p style="text-align:center; color:#666;">שלב <span class="num">1</span> מתוך <span class="num">3</span>: פרטים בסיסיים</p>
+
+      <div style="margin-top:20px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">📖 מקצוע</label>
+        <select id="planSubject">
+          <option value="מתמטיקה">🔢 מתמטיקה</option>
+          <option value="אנגלית">🔤 אנגלית</option>
+        </select>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">📝 שם התוכנית</label>
+        <input id="planName" placeholder="לדוגמה: מבחן סוף שנה ד'" />
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">📅 תאריך המבחן</label>
+        <input id="planExamDate" type="date" />
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">⏱️ דקות אימון יומי</label>
+        <select id="planDuration">
+          <option value="10">10 דקות - אימון קצר</option>
+          <option value="15" selected>15 דקות - אימון רגיל ⭐</option>
+          <option value="20">20 דקות - אימון ארוך</option>
+          <option value="25">25 דקות - אלוף 💪</option>
+        </select>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">😴 ימי מנוחה</label>
+        <div id="restDaysPicker" style="display:flex; flex-wrap:wrap; gap:8px;">
+          ${['א','ב','ג','ד','ה','ו','ש'].map((d, i) => `
+            <button class="btn ${i===6?'btn-primary':'btn-secondary'}" style="padding:10px; min-width:50px;" data-day="${i}" onclick="toggleRestDay(this, ${i})">${d}</button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:24px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="start()">ביטול</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="proceedToMaterials()">המשך ➡</button>
+      </div>
+    </div>
+  `);
+
+  // ברירת מחדל לתאריך - שבועיים מהיום
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate() + 14);
+  $('#planExamDate').value = defaultDate.toISOString().split('T')[0];
+
+  window._tempPlan = { restDays: [6] };
+}
+
+function toggleRestDay(btn, day) {
+  if (!window._tempPlan) window._tempPlan = { restDays: [] };
+  const idx = window._tempPlan.restDays.indexOf(day);
+  if (idx >= 0) {
+    window._tempPlan.restDays.splice(idx, 1);
+    btn.classList.remove('btn-primary');
+    btn.classList.add('btn-secondary');
+  } else {
+    window._tempPlan.restDays.push(day);
+    btn.classList.remove('btn-secondary');
+    btn.classList.add('btn-primary');
+  }
+}
+
+function proceedToMaterials() {
+  const subject = $('#planSubject').value;
+  const name = $('#planName').value.trim() || `מבחן ${subject}`;
+  const examDate = $('#planExamDate').value;
+  const dailyMinutes = parseInt($('#planDuration').value);
+
+  if (!examDate) { alert('בחר תאריך מבחן'); return; }
+  if (new Date(examDate) < new Date()) { alert('תאריך המבחן חייב להיות בעתיד'); return; }
+
+  window._tempPlan = {
+    ...window._tempPlan,
+    subject, name, examDate, dailyMinutes,
+    restDays: window._tempPlan.restDays || [6]
+  };
+
+  renderMaterialsScreen();
+}
+
+// ============================================================
+// 🆕 NEW PLAN - Step 2: Upload materials
+// ============================================================
+function renderMaterialsScreen() {
+  const tp = window._tempPlan;
+  if (!window._tempMaterials) window._tempMaterials = [];
+
+  render(`
+    ${renderHeader()}
+    <div class="card card-orange">
+      <h2 style="text-align:center;">📥 חומר הלימוד</h2>
+      <p style="text-align:center; color:#666;">שלב <span class="num">2</span> מתוך <span class="num">3</span>: העלה חומר לאימון</p>
+
+      <div style="background:#FFF5F0; padding:14px; border-radius:12px; margin:14px 0;">
+        <strong>💡 איך זה עובד:</strong><br>
+        <span style="font-size:15px;">
+          העלה קבצים של חומר הלימוד (דפי תרגול, מבחנים, סיכומים) ו/או הקלד טקסט.
+          ה-<span class="num">AI</span> יקרא את הכל, יזהה את הנושאים ויבנה תוכנית עם שאלות מותאמות!
+        </span>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('files', this)">📁 קבצים</button>
+        <button class="tab" onclick="switchTab('text', this)">✍️ טקסט חופשי</button>
+      </div>
+
+      <div id="tabFiles">
+        <label class="upload-zone" style="display:block;">
+          <div style="font-size:48px;">📤</div>
+          <div style="font-size:18px; font-weight:bold; margin-top:8px;">לחץ להעלאת קבצים</div>
+          <div style="font-size:14px; color:#666; margin-top:4px;">PDF, Word, תמונות - אפשר כמה ביחד</div>
+          <input type="file" multiple accept=".pdf,.doc,.docx,image/*" style="display:none;" onchange="handleMaterialUpload(event)" />
+        </label>
+        <div id="materialsList"></div>
+      </div>
+
+      <div id="tabText" style="display:none;">
+        <label style="font-weight:bold; display:block; margin-bottom:6px;">✍️ הסבר את החומר בטקסט חופשי</label>
+        <textarea id="freeText" rows="8" placeholder="לדוגמה:&#10;במבחן יהיו הנושאים הבאים:&#10;1. שברים פשוטים - חיבור וחיסור&#10;2. כפל וחילוק עד 100&#10;3. גיאומטריה - שטח והיקף של מלבן&#10;...&#10;&#10;אפשר גם להעתיק את רשימת הנושאים שהמורה שלח."></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:24px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="renderNewPlanScreen()">חזרה</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="generatePlan()">
+          🚀 בנה לי תוכנית!
+        </button>
+      </div>
+    </div>
+  `);
+
+  renderMaterialsList();
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab === 'files') {
+    $('#tabFiles').style.display = 'block';
+    $('#tabText').style.display = 'none';
+  } else {
+    $('#tabFiles').style.display = 'none';
+    $('#tabText').style.display = 'block';
+  }
+}
+
+async function handleMaterialUpload(e) {
+  const files = Array.from(e.target.files);
+  for (const file of files) {
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`הקובץ ${file.name} גדול מ-10MB ולא ייטען`);
+      continue;
     }
-  });
-  const nb = document.getElementById('nextBtn');
-  nb.style.display = 'inline-flex';
-  setTimeout(() => nb.scrollIntoView({behavior:"smooth"}), 100);
+    const dataUrl = await fileToDataUrl(file);
+    window._tempMaterials.push({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      dataUrl
+    });
+  }
+  renderMaterialsList();
 }
 
-// 🏀 ניתוח תמונת פתרון בכתב יד באמצעות Gemini AI
-// פונקציה לדחיסת תמונה לפני שליחה (חוסך עלויות ומאיץ)
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderMaterialsList() {
+  const list = $('#materialsList');
+  if (!list) return;
+  if (!window._tempMaterials || window._tempMaterials.length === 0) {
+    list.innerHTML = '';
+    return;
+  }
+  list.innerHTML = window._tempMaterials.map((m, i) => `
+    <div style="background:white; padding:10px 14px; border-radius:10px; margin:6px 0; display:flex; align-items:center; gap:10px;">
+      <div style="font-size:24px;">${m.type.startsWith('image/') ? '🖼️' : m.type.includes('pdf') ? '📄' : '📝'}</div>
+      <div style="flex:1; text-align:right;">
+        <div style="font-weight:bold; font-size:14px;">${m.name}</div>
+        <div style="color:#666; font-size:12px;"><span class="num">${(m.size/1024).toFixed(0)}</span> KB</div>
+      </div>
+      <button class="icon-btn" onclick="removeMaterial(${i})">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function removeMaterial(i) {
+  window._tempMaterials.splice(i, 1);
+  renderMaterialsList();
+}
+
+// ============================================================
+// 🆕 NEW PLAN - Step 3: Generate via AI
+// ============================================================
+async function generatePlan() {
+  const freeText = $('#freeText') ? $('#freeText').value.trim() : '';
+  const materials = window._tempMaterials || [];
+
+  if (materials.length === 0 && !freeText) {
+    alert('העלה לפחות קובץ אחד או הקלד טקסט עם תיאור הנושאים');
+    return;
+  }
+
+  const tp = window._tempPlan;
+  const student = getActiveStudent();
+
+  render(`
+    ${renderHeader()}
+    <div style="text-align:center; padding-top:80px;">
+      <div class="spinner"></div>
+      <h2 style="margin-top:24px;">🏀 המאמן מכין לך תוכנית מותאמת...</h2>
+      <p style="color:#666; font-size:18px;">קורא את החומר, מזהה נושאים, ומייצר שאלות</p>
+      <p style="color:#999; font-size:14px;">זה לוקח <span class="num">30-60</span> שניות, אל תסגור את הדף</p>
+      <div style="margin-top:20px; font-size:14px; color:#999;" id="genStatus">⏳ מתחיל...</div>
+    </div>
+  `);
+
+  // אנימציית סטטוס
+  const statuses = ['📖 קורא את החומר...', '🎯 מזהה נושאים מרכזיים...', '✍️ מייצר שאלות מותאמות...', '📅 בונה לוח אימונים...'];
+  let statusIdx = 0;
+  const statusInterval = setInterval(() => {
+    const el = $('#genStatus');
+    if (el && statusIdx < statuses.length) {
+      el.textContent = statuses[statusIdx++];
+    }
+  }, 8000);
+
+  try {
+    const response = await fetch('/api/create-study-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subject: tp.subject,
+        studentName: student.name,
+        studentGrade: student.grade,
+        examDate: tp.examDate,
+        dailyMinutes: tp.dailyMinutes,
+        restDays: tp.restDays,
+        materials,
+        freeText
+      })
+    });
+
+    clearInterval(statusInterval);
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'שגיאה ביצירת תוכנית');
+    }
+
+    const result = await response.json();
+    const planId = newId('plan');
+    student.plans[planId] = {
+      id: planId,
+      name: tp.name,
+      subject: tp.subject,
+      examDate: tp.examDate,
+      dailyMinutes: tp.dailyMinutes,
+      restDays: tp.restDays,
+      ...result.plan,
+      completedSessions: {},
+      stats: { score: 0, streak: 0, topicScores: {} },
+      diagnosticDone: false,
+      createdAt: new Date().toISOString()
+    };
+    state.activePlanId = planId;
+    saveState();
+
+    delete window._tempPlan;
+    delete window._tempMaterials;
+
+    renderPlanCreatedSuccess();
+
+  } catch (error) {
+    clearInterval(statusInterval);
+    console.error(error);
+    render(`
+      ${renderHeader()}
+      <div class="card" style="border:3px solid #DC143C;">
+        <h2 style="color:#DC143C; text-align:center;">😕 משהו השתבש</h2>
+        <p style="text-align:center;">${error.message}</p>
+        <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="renderMaterialsScreen()">נסה שוב</button>
+      </div>
+    `);
+  }
+}
+
+function renderPlanCreatedSuccess() {
+  const plan = getActivePlan();
+  render(`
+    ${renderHeader()}
+    <div class="card" style="text-align:center;">
+      <div class="celebrate">🎉</div>
+      <h1>התוכנית מוכנה!</h1>
+      <p style="font-size:18px;">
+        זיהיתי <span class="num">${plan.topics.length}</span> נושאים ויצרתי
+        <span class="num">${plan.trainingPlan.length}</span> סשני אימון
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>📚 הנושאים שזוהו:</h3>
+      <div>
+        ${plan.topics.map(t => `
+          <div style="background:#FFF5F0; padding:10px 14px; border-radius:10px; margin:6px 0;">
+            <strong>${t.name}</strong>
+            ${t.nameInOriginalLanguage && t.nameInOriginalLanguage !== t.name ? `(<span class="english-text">${t.nameInOriginalLanguage}</span>)` : ''}
+            <div style="font-size:13px; color:#666;">${t.subtopics.slice(0,3).join(' • ')}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    ${plan.studyTips ? `
+      <div class="card" style="background:#E3F2FD;">
+        <h3>💡 טיפים ללמידה</h3>
+        <p>${plan.studyTips}</p>
+      </div>
+    ` : ''}
+
+    <button class="btn btn-primary btn-large btn-full" onclick="renderMainMenu()">
+      🏀 בוא נתחיל להתאמן!
+    </button>
+  `);
+}
+
+// ============================================================
+// 🏠 MAIN MENU
+// ============================================================
+function renderMainMenu() {
+  const student = getActiveStudent();
+  const plan = getActivePlan();
+  if (!plan) return renderPlanList();
+
+  const todaySession = getTodaySession();
+  const examDate = new Date(plan.examDate);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const daysLeft = Math.max(0, Math.ceil((examDate - today) / (1000 * 60 * 60 * 24)));
+
+  render(`
+    ${renderHeader()}
+    <div class="card card-highlight">
+      <h2 style="margin:0;">${plan.subject} - ${plan.name}</h2>
+      <p style="margin:8px 0 0 0; font-size:16px;">
+        📅 המבחן בעוד <span class="num">${daysLeft}</span> ימים
+      </p>
+    </div>
+
+    ${renderTodaysSessionCard(todaySession, plan)}
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px;">
+      <button class="btn btn-secondary btn-large" onclick="renderTopicPractice()">
+        📚 תרגול<br>לפי נושא
+      </button>
+      <button class="btn btn-secondary btn-large" onclick="renderMixedPractice()">
+        🎲 תרגול<br>מעורב
+      </button>
+      <button class="btn btn-secondary btn-large" onclick="renderTrainingCalendar()">
+        📅 לוח<br>האימונים
+      </button>
+      <button class="btn btn-secondary btn-large" onclick="renderStats()">
+        📊 הסטטיסטיקה<br>שלי
+      </button>
+    </div>
+
+    <button class="btn btn-dark btn-full" style="margin-top:20px;" onclick="renderPlanList()">
+      🔄 החלף תוכנית
+    </button>
+  `);
+}
+
+function getTodaySession() {
+  const plan = getActivePlan();
+  if (!plan || !plan.trainingPlan) return null;
+  const today = new Date().toISOString().split('T')[0];
+
+  // קודם בדוק אם יש סשן להיום
+  let session = plan.trainingPlan.find(s => s.date === today);
+  if (session) return session;
+
+  // אחרת מצא את הסשן הראשון שלא הושלם
+  for (const s of plan.trainingPlan) {
+    if (!plan.completedSessions[s.day]) {
+      return s;
+    }
+  }
+  return null;
+}
+
+function renderTodaysSessionCard(session, plan) {
+  if (!session) {
+    return `
+      <div class="card" style="background:#E8F5E9; text-align:center;">
+        <div style="font-size:48px;">🏆</div>
+        <h2>סיימת את כל התוכנית!</h2>
+        <p>אתה מוכן למבחן 💪</p>
+      </div>
+    `;
+  }
+
+  const isCompleted = plan.completedSessions[session.day];
+  const sessionDate = new Date(session.date);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  sessionDate.setHours(0,0,0,0);
+  const isToday = sessionDate.getTime() === today.getTime();
+  const isPast = sessionDate < today;
+
+  if (isCompleted) {
+    return `
+      <div class="card" style="background:#E8F5E9;">
+        <div style="text-align:center;">
+          <div style="font-size:48px;">✅</div>
+          <h2>סיימת היום! 🎉</h2>
+          <p>לך תיהנה עם חברים/חוגים! נתראה מחר 🏀</p>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="card card-orange">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">${isToday ? '🏀 האימון שלי להיום' : isPast ? '⏰ אימון מפוספס' : '📅 האימון הבא'}</h3>
+        <span style="font-size:14px; color:#666;">יום <span class="num">${session.day}</span>/<span class="num">${plan.trainingPlan.length}</span></span>
+      </div>
+      <div style="font-size:14px; color:#666; margin:6px 0;">${session.phase}</div>
+      <h2 style="margin:8px 0;">${session.title}</h2>
+      <p style="color:#666; font-size:15px;">${session.description}</p>
+      <div style="display:flex; gap:14px; font-size:14px; color:#666; margin:10px 0;">
+        <span>⏱️ ~<span class="num">${plan.dailyMinutes}</span> דקות</span>
+        <span>🎯 <span class="num">${session.questionsCount}</span> תרגילים</span>
+      </div>
+      <button class="btn btn-primary btn-large btn-full" onclick="startSession(${session.day})">
+        ▶️ התחל אימון!
+      </button>
+    </div>
+  `;
+}
+
+// ============================================================
+// 📅 TRAINING CALENDAR
+// ============================================================
+function renderTrainingCalendar() {
+  const plan = getActivePlan();
+  render(`
+    ${renderHeader()}
+    <h2 style="text-align:center;">📅 לוח האימונים שלי</h2>
+    <div class="card">
+      <div class="calendar-grid">
+        ${plan.trainingPlan.map(s => {
+          const isDone = plan.completedSessions[s.day];
+          const d = new Date(s.date);
+          const today = new Date(); today.setHours(0,0,0,0);
+          d.setHours(0,0,0,0);
+          const isToday = d.getTime() === today.getTime();
+          const cls = isDone ? 'done' : (isToday ? 'today' : '');
+          return `
+            <div class="cal-day ${cls}" onclick="viewSessionDetails(${s.day})" style="cursor:pointer;">
+              <div style="font-size:11px; opacity:0.8;">יום <span class="num">${s.day}</span></div>
+              <div style="font-size:18px; font-weight:bold;">${isDone ? '✅' : isToday ? '🏀' : '⚪'}</div>
+              <div style="font-size:11px;">${new Date(s.date).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'})}</div>
+            </div>
+          `;
+        }).join('')}
+        <div class="cal-day exam">
+          <div style="font-size:11px;">המבחן!</div>
+          <div style="font-size:18px;">🎯</div>
+          <div style="font-size:11px;">${new Date(plan.examDate).toLocaleDateString('he-IL', {day:'numeric', month:'numeric'})}</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-full" onclick="renderMainMenu()">⬅ חזרה</button>
+  `);
+}
+
+function viewSessionDetails(day) {
+  const plan = getActivePlan();
+  const session = plan.trainingPlan.find(s => s.day === day);
+  if (!session) return;
+
+  const isDone = plan.completedSessions[day];
+
+  render(`
+    ${renderHeader()}
+    <div class="card card-orange">
+      <h2>יום <span class="num">${session.day}</span>: ${session.title}</h2>
+      <div style="color:#666;">${session.phase}</div>
+      <p>${session.description}</p>
+      <div>📅 ${new Date(session.date).toLocaleDateString('he-IL')}</div>
+      <div>🎯 <span class="num">${session.questionsCount}</span> שאלות</div>
+      ${isDone ? `
+        <div style="background:#E8F5E9; padding:14px; border-radius:10px; margin:14px 0;">
+          ✅ הושלם! ניקוד: <span class="num">${isDone.score || 0}</span>/<span class="num">${session.questionsCount * 10}</span>
+        </div>
+      ` : ''}
+      <button class="btn btn-primary btn-full" onclick="startSession(${day})">
+        ${isDone ? '🔄 תרגל שוב' : '▶️ התחל'}
+      </button>
+      <button class="btn btn-secondary btn-full" style="margin-top:10px;" onclick="renderTrainingCalendar()">⬅ חזרה</button>
+    </div>
+  `);
+}
+
+// ============================================================
+// 🎯 PRACTICE SESSION
+// ============================================================
+let currentSession = null;
+
+function startSession(day) {
+  const plan = getActivePlan();
+  const sessionDef = plan.trainingPlan.find(s => s.day === day);
+  if (!sessionDef) return;
+
+  // איסוף שאלות מהנושאים הרלוונטיים
+  const allQs = [];
+  for (const tid of sessionDef.topicIds) {
+    const qs = plan.questionsByTopic[tid] || [];
+    allQs.push(...qs.map(q => ({ ...q, topicId: tid })));
+  }
+  if (allQs.length === 0) {
+    alert('לא נמצאו שאלות לסשן הזה');
+    return;
+  }
+
+  // ערבב ובחר לפי כמות
+  const shuffled = allQs.sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, sessionDef.questionsCount);
+
+  currentSession = {
+    sessionDef,
+    questions: selected,
+    currentIndex: 0,
+    correctCount: 0,
+    startTime: Date.now(),
+    answers: []
+  };
+
+  renderSessionStart();
+}
+
+function renderSessionStart() {
+  const s = currentSession;
+  render(`
+    ${renderHeader()}
+    <div class="card card-orange" style="text-align:center;">
+      <div style="font-size:60px;">🏀</div>
+      <h1>${s.sessionDef.title}</h1>
+      <p style="font-size:18px;">${s.sessionDef.phase}</p>
+      <div style="margin:20px 0; display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+        <div><div style="font-size:32px;">⏱️</div><div><span class="num">~${getActivePlan().dailyMinutes}</span> דקות</div></div>
+        <div><div style="font-size:32px;">🎯</div><div><span class="num">${s.questions.length}</span> תרגילים</div></div>
+      </div>
+      <button class="btn btn-primary btn-large btn-full" onclick="renderCurrentQuestion()">
+        🔥 התחל!
+      </button>
+    </div>
+  `);
+}
+
+function renderCurrentQuestion() {
+  const s = currentSession;
+  if (s.currentIndex >= s.questions.length) {
+    return renderSessionComplete();
+  }
+
+  const q = s.questions[s.currentIndex];
+  const plan = getActivePlan();
+  const isEnglish = plan.subject === 'אנגלית';
+
+  const progress = ((s.currentIndex) / s.questions.length) * 100;
+
+  render(`
+    ${renderHeader()}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <div style="font-size:14px;">שאלה <span class="num">${s.currentIndex + 1}</span>/<span class="num">${s.questions.length}</span></div>
+      <div style="font-size:14px;">🎯 נכון: <span class="num">${s.correctCount}</span>/<span class="num">${s.currentIndex}</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+
+    <div class="question-box">
+      <div class="question-text ${isEnglish && !q.questionText.match(/[א-ת]/) ? 'english-text' : ''}">${q.questionText}</div>
+      ${q.questionMath ? `<div class="question-math">${q.questionMath}</div>` : ''}
+
+      ${q.type === 'multiple_choice' && q.options ? `
+        <div class="answer-grid">
+          ${q.options.map((opt, i) => `
+            <button class="answer-btn ${isEnglish && !opt.match(/[א-ת]/) ? 'english-text' : ''}" onclick="selectAnswer(${i}, '${opt.replace(/'/g, "\\'")}')">
+              ${opt}
+            </button>
+          `).join('')}
+        </div>
+      ` : `
+        <div style="margin:20px 0;">
+          <input id="openAnswer" placeholder="התשובה שלך..." inputmode="${isEnglish ? 'text' : 'numeric'}" enterkeyhint="done" style="text-align:center; font-size:24px; ${isEnglish ? 'direction:ltr;' : ''}" />
+        </div>
+        <button class="btn btn-primary btn-large btn-full" onclick="submitOpenAnswer()">✓ בדוק תשובה</button>
+      `}
+
+      ${q.hint ? `
+        <details style="margin-top:14px;">
+          <summary style="cursor:pointer; color:#FF6B35; font-weight:bold;">💡 רוצה רמז?</summary>
+          <p style="margin-top:8px; font-size:15px; color:#666;">${q.hint}</p>
+        </details>
+      ` : ''}
+    </div>
+
+    <div style="background:#FFF5F0; padding:16px; border-radius:14px; margin-top:14px;">
+      <h3 style="margin-top:0;">📸 פתרת על נייר?</h3>
+      <p style="font-size:14px;">צלם את הפתרון שלך כדי לקבל פידבק מפורט מהמאמן על כל שלב</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <label class="btn btn-primary" style="flex:1; min-width:140px;">
+          📸 צלם פתרון
+          <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleSolutionImage(event)" />
+        </label>
+        <label class="btn btn-secondary" style="flex:1; min-width:140px;">
+          🖼️ בחר מהגלריה
+          <input type="file" accept="image/*" style="display:none;" onchange="handleSolutionImage(event)" />
+        </label>
+      </div>
+      <div id="imageAnalysisResult"></div>
+    </div>
+  `);
+
+  // אם זה Input, focus
+  setTimeout(() => {
+    const inp = $('#openAnswer');
+    if (inp) inp.focus();
+    if (inp) inp.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitOpenAnswer(); });
+  }, 100);
+}
+
+function selectAnswer(idx, answer) {
+  const s = currentSession;
+  const q = s.questions[s.currentIndex];
+  const isCorrect = String(answer).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
+  finalizeAnswer(isCorrect, answer);
+}
+
+function submitOpenAnswer() {
+  const inp = $('#openAnswer');
+  if (!inp) return;
+  const answer = inp.value.trim();
+  if (!answer) { inp.focus(); return; }
+  const q = currentSession.questions[currentSession.currentIndex];
+  const isCorrect = String(answer).trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase();
+  finalizeAnswer(isCorrect, answer);
+}
+
+function finalizeAnswer(isCorrect, userAnswer) {
+  const s = currentSession;
+  const q = s.questions[s.currentIndex];
+  s.answers.push({ qid: q.id, userAnswer, isCorrect });
+  if (isCorrect) s.correctCount++;
+
+  const student = getActiveStudent();
+
+  render(`
+    ${renderHeader()}
+    <div class="card" style="border:3px solid ${isCorrect ? '#2d8f3f' : '#FF6B35'}; ${isCorrect ? 'background:#E8F5E9;' : 'background:#FFF5F0;'}">
+      <div style="text-align:center;">
+        <div class="celebrate">${isCorrect ? '🏀✨' : '💪'}</div>
+        <h2 style="color:${isCorrect ? '#2d8f3f' : '#FF6B35'};">
+          ${isCorrect ? 'סל! 🎯 מהלך מנצח!' : 'החטאה קלה - בוא נלמד!'}
+        </h2>
+      </div>
+
+      <div style="background:white; padding:14px; border-radius:12px; margin:14px 0;">
+        <div><strong>השאלה:</strong> ${q.questionText} ${q.questionMath ? `<span class="num">${q.questionMath}</span>` : ''}</div>
+        <div style="margin-top:8px;"><strong>התשובה שלך:</strong> <span class="num">${userAnswer}</span></div>
+        ${!isCorrect ? `<div><strong>התשובה הנכונה:</strong> <span class="num" style="color:#2d8f3f;">${q.correctAnswer}</span></div>` : ''}
+      </div>
+
+      <div style="background:#E3F2FD; padding:14px; border-radius:12px;">
+        <strong>💡 הסבר:</strong><br>
+        ${q.explanation || ''}
+      </div>
+
+      <button class="btn btn-primary btn-large btn-full" style="margin-top:16px;" onclick="nextQuestion()">
+        ${s.currentIndex + 1 >= s.questions.length ? '🏆 סיים אימון' : 'לתרגיל הבא ➡'}
+      </button>
+    </div>
+  `);
+}
+
+function nextQuestion() {
+  currentSession.currentIndex++;
+  if (currentSession.currentIndex >= currentSession.questions.length) {
+    renderSessionComplete();
+  } else {
+    renderCurrentQuestion();
+  }
+}
+
+function renderSessionComplete() {
+  const s = currentSession;
+  const plan = getActivePlan();
+  const student = getActiveStudent();
+  const score = s.correctCount * 10;
+  const percent = Math.round((s.correctCount / s.questions.length) * 100);
+  const minutes = Math.max(1, Math.floor((Date.now() - s.startTime) / 60000));
+
+  // שמור התקדמות
+  plan.completedSessions[s.sessionDef.day] = {
+    completedAt: new Date().toISOString(),
+    score,
+    correctCount: s.correctCount,
+    totalQuestions: s.questions.length,
+    minutes
+  };
+  plan.stats.score = (plan.stats.score || 0) + score;
+  if (percent >= 70) {
+    plan.stats.streak = (plan.stats.streak || 0) + 1;
+  } else {
+    plan.stats.streak = 0;
+  }
+  saveState();
+
+  render(`
+    ${renderHeader()}
+    <div class="card" style="text-align:center;">
+      <div class="celebrate">🎉</div>
+      <h1>סיימת את האימון!</h1>
+      <p style="font-size:18px;">${student.name}, אתה משחקן אמיתי!</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0;">
+        <div style="background:#FFF5F0; padding:14px; border-radius:12px;">
+          <div style="font-size:32px;">✅</div>
+          <div><span class="num">${s.correctCount}</span>/<span class="num">${s.questions.length}</span></div>
+          <div style="color:#666; font-size:13px;">נכון</div>
+        </div>
+        <div style="background:#FFF5F0; padding:14px; border-radius:12px;">
+          <div style="font-size:32px;">🏆</div>
+          <div><span class="num">${score}</span></div>
+          <div style="color:#666; font-size:13px;">נקודות</div>
+        </div>
+        <div style="background:#FFF5F0; padding:14px; border-radius:12px;">
+          <div style="font-size:32px;">⏱️</div>
+          <div><span class="num">${minutes}</span></div>
+          <div style="color:#666; font-size:13px;">דקות</div>
+        </div>
+        <div style="background:#FFF5F0; padding:14px; border-radius:12px;">
+          <div style="font-size:32px;">🔥</div>
+          <div><span class="num">${plan.stats.streak}</span></div>
+          <div style="color:#666; font-size:13px;">רצף</div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg, #2d8f3f, #4caf50); color:white; padding:20px; border-radius:16px;">
+        <div style="font-size:24px; font-weight:bold;">🚀 משוחרר!</div>
+        <p style="margin:8px 0 0 0; font-size:16px;">לך תיהנה - חברים, חוגים, גיימינג!<br>נתראה מחר באימון הבא 🏀</p>
+      </div>
+
+      <button class="btn btn-primary btn-large btn-full" style="margin-top:20px;" onclick="renderMainMenu()">
+        🏠 חזרה לתפריט
+      </button>
+    </div>
+  `);
+
+  currentSession = null;
+}
+
+// ============================================================
+// 📸 IMAGE SOLUTION ANALYSIS
+// ============================================================
+async function handleSolutionImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const resultDiv = $('#imageAnalysisResult');
+  if (!resultDiv) return;
+
+  resultDiv.innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      <div class="spinner"></div>
+      <p style="margin-top:10px;"><strong>המאמן בוחן את המהלך שלך...</strong></p>
+      <p style="font-size:14px; color:#666;">קורא את הפתרון ובודק כל שלב</p>
+    </div>
+  `;
+
+  try {
+    const compressedDataUrl = await compressImage(file);
+    const q = currentSession.questions[currentSession.currentIndex];
+    const plan = getActivePlan();
+    const student = getActiveStudent();
+
+    const subject = plan.subject === 'אנגלית' ? 'english' : 'math';
+    const questionFull = (q.questionText || '') + ' ' + (q.questionMath || '');
+
+    const response = await fetch('/api/analyze-solution', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        imageBase64: compressedDataUrl,
+        question: questionFull.trim(),
+        correctAnswer: q.correctAnswer,
+        topic: q.topicId,
+        studentName: student.name,
+        subject
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'שגיאה בניתוח');
+    }
+
+    const data = await response.json();
+    displayAIAnalysis(data.analysis, compressedDataUrl);
+
+  } catch (error) {
+    resultDiv.innerHTML = `
+      <div style="background:#FFE4E4; padding:16px; border-radius:12px; margin-top:10px; border:2px solid #DC143C;">
+        <strong>😅 הייתה בעיה:</strong> ${error.message}
+        <button class="btn btn-secondary" style="margin-top:8px;" onclick="document.getElementById('imageAnalysisResult').innerHTML='';">סגור</button>
+      </div>
+    `;
+  }
+}
+
 async function compressImage(file, maxWidth = 1280, quality = 0.85) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -739,16 +1561,10 @@ async function compressImage(file, maxWidth = 1280, quality = 0.85) {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        if (width > maxWidth) {
-          height = (height * maxWidth) / width;
-          width = maxWidth;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
+        let w = img.width, h = img.height;
+        if (w > maxWidth) { h = h * maxWidth / w; w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.onerror = reject;
@@ -759,285 +1575,300 @@ async function compressImage(file, maxWidth = 1280, quality = 0.85) {
   });
 }
 
-async function handleImageUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+function displayAIAnalysis(analysis, imageDataUrl) {
+  const resultDiv = $('#imageAnalysisResult');
+  if (!resultDiv) return;
 
-  // הצגה מיידית של תצוגה מקדימה
-  document.getElementById('uploadSection').style.display = 'none';
-  const pv = document.getElementById('imagePreview');
-  pv.style.display = 'block';
-
-  try {
-    // דחיסת התמונה
-    const compressedDataUrl = await compressImage(file);
-    document.getElementById('uploadedImg').src = compressedDataUrl;
-    setTimeout(() => pv.scrollIntoView({ behavior: 'smooth' }), 100);
-
-    // הצגת מצב טעינה אנימטיבי
-    const loader = document.getElementById('aiFeedbackLoader');
-    loader.innerHTML = `
-      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-        <div style="font-size:48px; animation: spin 1.2s linear infinite;">🏀</div>
-        <div style="color:#FF6B35; font-size:20px; font-weight:bold;">המאמן בוחן את המהלך שלך...</div>
-        <div style="color:#666; font-size:16px;">קורא את הפתרון ובודק כל שלב</div>
-      </div>
-      <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>`;
-
-    // הכנת נתונים לשליחה ל-backend
-    const currentQuestion = sessionQueue[currentQIndex];
-    const requestBody = {
-      imageBase64: compressedDataUrl,
-      question: currentQuestion.q || currentQuestion.question || '',
-      correctAnswer: String(currentQuestion.a || currentQuestion.answer || ''),
-      topic: currentQuestion.topic || '',
-      studentName: state.name || ''
-    };
-
-    // שליחה ל-backend
-    const response = await fetch('/api/analyze-solution', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || 'שגיאה בניתוח התמונה');
-    }
-
-    const data = await response.json();
-    const analysis = data.analysis;
-
-    // הצגת הניתוח האמיתי
-    displayAIAnalysis(analysis);
-
-  } catch (error) {
-    console.error('Image analysis error:', error);
-    document.getElementById('aiFeedbackLoader').innerHTML = `
-      <div style="background:#ffe4e4; padding:18px; border-radius:15px; border:3px solid #DC143C; color:#1a1a1a; margin-top:12px; text-align:right;">
-        <strong style="font-size:20px;">😅 אופס, הייתה בעיה</strong><br><br>
-        ${error.message || 'לא הצלחתי לנתח את התמונה. נסה לצלם שוב בתאורה טובה יותר.'}<br><br>
-        <button onclick="retryImageUpload()" style="background:#FF6B35; color:white; border:none; padding:12px 24px; border-radius:25px; font-size:18px; font-weight:bold; cursor:pointer; margin-top:10px;">📸 נסה שוב</button>
-      </div>`;
-  }
-}
-
-function retryImageUpload() {
-  document.getElementById('imagePreview').style.display = 'none';
-  document.getElementById('uploadSection').style.display = 'flex';
-  document.getElementById('aiFeedbackLoader').innerHTML = '';
-  // איפוס ה-input
-  document.querySelectorAll('#uploadSection input[type=file]').forEach(inp => inp.value = '');
-}
-
-function displayAIAnalysis(analysis) {
-  const loader = document.getElementById('aiFeedbackLoader');
-
-  // אם התמונה לא קריאה
+  // תרגיל לא ברור
   if (analysis.imageReadable === false) {
-    loader.innerHTML = `
-      <div style="background:#fff3cd; padding:20px; border-radius:15px; border:3px solid #FFC107; color:#1a1a1a; margin-top:12px; text-align:right;">
-        <strong style="font-size:22px;">📷 לא הצלחתי לקרוא את התמונה</strong><br><br>
-        <span style="font-size:17px;">${analysis.imageIssue || 'התמונה לא מספיק ברורה'}</span><br><br>
-        <strong>💡 טיפים לצילום טוב:</strong>
-        <ul style="font-size:16px; line-height:1.8;">
-          <li>וודא תאורה טובה (בלי צללים)</li>
-          <li>החזק את הטלפון ישר מעל הדף</li>
+    resultDiv.innerHTML = `
+      <div style="background:#FFF3CD; padding:16px; border-radius:12px; border:2px solid #FFC107; margin-top:10px;">
+        <h3>📷 לא הצלחתי לקרוא את התמונה</h3>
+        <p>${analysis.imageIssue || 'התמונה לא מספיק ברורה'}</p>
+        <strong>💡 טיפים:</strong>
+        <ul>
+          <li>תאורה טובה (בלי צללים)</li>
+          <li>החזק את האייפד ישר מעל הדף</li>
           <li>וודא שכל הפתרון נכנס בפריים</li>
-          <li>כתוב בעיפרון כהה או עט</li>
         </ul>
-        <button onclick="retryImageUpload()" style="background:#FF6B35; color:white; border:none; padding:12px 24px; border-radius:25px; font-size:18px; font-weight:bold; cursor:pointer; margin-top:10px;">📸 צלם שוב</button>
-      </div>`;
+      </div>
+    `;
     return;
   }
 
-  // צבע רקע לפי תוצאה
+  // תרגיל שונה!
+  if (analysis.wrongExercise === true) {
+    const q = currentSession.questions[currentSession.currentIndex];
+    resultDiv.innerHTML = `
+      <div style="background:#FFF3CD; padding:18px; border-radius:14px; border:3px solid #FF9800; margin-top:10px;">
+        <div style="text-align:center;">
+          <div style="font-size:40px;">🤔</div>
+          <h3 style="color:#E65100;">נראה שפתרת תרגיל אחר!</h3>
+        </div>
+        <div style="background:white; padding:12px; border-radius:10px; margin:10px 0;">
+          <strong>📌 התרגיל שצריך לפתור:</strong><br>
+          <span class="num" style="font-size:18px; color:#FF6B35; font-weight:bold;">${(q.questionText || '') + ' ' + (q.questionMath || '')}</span>
+        </div>
+        <div style="background:#FFE4E4; padding:12px; border-radius:10px;">
+          <strong>📍 מה שראיתי בתמונה:</strong><br>
+          <span class="num">${analysis.exerciseInImage || '?'}</span>
+        </div>
+        <div style="background:#F0F9FF; padding:12px; border-radius:10px; margin-top:10px;">
+          <strong>💬 המאמן אומר:</strong><br>
+          ${analysis.exerciseMismatchExplanation || ''}
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:12px;" onclick="document.getElementById('imageAnalysisResult').innerHTML='';">
+          📸 צלם תרגיל הנכון
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // ניתוח רגיל
   const isCorrect = analysis.isCorrect === true;
   const mainColor = isCorrect ? '#2d8f3f' : '#FF6B35';
-  const bgColor = isCorrect ? '#e8f5e9' : '#fff5f0';
-  const emoji = isCorrect ? '🏀✨' : '💪';
-  const headerText = isCorrect ? 'סל! מהלך מנצח!' : 'בוא נראה מה קרה';
-
-  // ציון בכוכבי כדורסל
+  const bgColor = isCorrect ? '#E8F5E9' : '#FFF5F0';
   const score = analysis.overallScore || 3;
   const stars = '🏀'.repeat(score) + '⚪'.repeat(5 - score);
 
   let stepsHtml = '';
   if (analysis.stepsIdentified && analysis.stepsIdentified.length > 0) {
-    stepsHtml = '<div style="margin-top:15px;"><strong style="font-size:18px;">📋 השלבים שזיהיתי:</strong><br>';
+    stepsHtml = '<div style="margin-top:12px;"><strong>📋 מה עשית בפתרון:</strong>';
     analysis.stepsIdentified.forEach(step => {
-      const stepIcon = step.isStepCorrect ? '✅' : '❌';
-      stepsHtml += `<div style="background:white; padding:10px 14px; border-radius:10px; margin:8px 0; border-right:4px solid ${step.isStepCorrect ? '#2d8f3f' : '#DC143C'};">
-        <strong>${stepIcon} שלב ${step.stepNumber}:</strong> ${step.whatStudentDid}<br>
-        <em style="color:#666; font-size:14px;">${step.comment || ''}</em>
-      </div>`;
+      const icon = step.isStepCorrect ? '✅' : '❌';
+      const color = step.isStepCorrect ? '#2d8f3f' : '#DC143C';
+      stepsHtml += `
+        <div style="background:white; padding:10px 14px; border-radius:10px; margin:6px 0; border-right:4px solid ${color};">
+          <strong>${icon} שלב <span class="num">${step.stepNumber}</span>:</strong> ${step.whatStudentDid}
+          ${step.comment ? `<br><em style="color:#666; font-size:14px;">${step.comment}</em>` : ''}
+        </div>
+      `;
     });
     stepsHtml += '</div>';
   }
 
-  let mistakeHtml = '';
-  if (analysis.mistakeFound && analysis.mistakeLocation) {
-    mistakeHtml = `<div style="background:#ffe4e4; padding:14px; border-radius:12px; margin-top:12px; border-right:4px solid #DC143C;">
-      <strong style="font-size:17px;">🎯 איפה הייתה החטאה:</strong><br>
-      <span style="font-size:16px;">${analysis.mistakeLocation}</span>
-    </div>`;
-  }
-
-  let correctApproachHtml = '';
-  if (analysis.correctApproach) {
-    correctApproachHtml = `<div style="background:#e3f2fd; padding:14px; border-radius:12px; margin-top:12px; border-right:4px solid #1976d2;">
-      <strong style="font-size:17px;">💡 הדרך הנכונה לפתור:</strong><br>
-      <span style="font-size:16px; line-height:1.6;">${analysis.correctApproach}</span>
-    </div>`;
-  }
-
-  loader.innerHTML = `
-    <div style="background:${bgColor}; padding:20px; border-radius:18px; border:3px solid ${mainColor}; color:#1a1a1a; margin-top:12px; text-align:right;">
-      <div style="text-align:center; margin-bottom:15px;">
-        <div style="font-size:32px;">${emoji}</div>
-        <strong style="font-size:24px; color:${mainColor};">${headerText}</strong><br>
-        <div style="font-size:24px; margin-top:8px;">${stars}</div>
+  resultDiv.innerHTML = `
+    <div style="background:${bgColor}; padding:18px; border-radius:16px; border:3px solid ${mainColor}; margin-top:10px;">
+      <div style="text-align:center;">
+        <div style="font-size:36px;">${isCorrect ? '🏀✨' : '💪'}</div>
+        <h3 style="color:${mainColor};">${isCorrect ? 'סל! מהלך מנצח!' : 'בוא נראה מה קרה'}</h3>
+        <div style="font-size:22px;">${stars}</div>
       </div>
 
-      ${analysis.studentAnswer ? `<div style="background:white; padding:12px; border-radius:10px; margin-bottom:12px;">
-        <strong>📝 התשובה שכתבת:</strong> <span style="font-size:20px; font-weight:bold; color:${mainColor};">${analysis.studentAnswer}</span>
-      </div>` : ''}
+      ${analysis.studentAnswer ? `
+        <div style="background:white; padding:10px; border-radius:10px; margin:10px 0;">
+          <strong>📝 התשובה שלך:</strong> <span class="num" style="font-size:18px; font-weight:bold; color:${mainColor};">${analysis.studentAnswer}</span>
+        </div>
+      ` : ''}
 
       ${stepsHtml}
-      ${mistakeHtml}
-      ${correctApproachHtml}
 
-      <div style="background:${mainColor}; color:white; padding:14px; border-radius:12px; margin-top:15px;">
-        <strong style="font-size:18px;">🏀 המאמן אומר:</strong><br>
-        <span style="font-size:17px; line-height:1.6;">${analysis.coachFeedback || 'המשך לתרגל!'}</span>
-      </div>
-
-      ${analysis.nextTimeAdvice ? `<div style="margin-top:12px; padding:12px; background:white; border-radius:10px;">
-        <strong>🎯 לפעם הבאה:</strong> <span style="font-size:16px;">${analysis.nextTimeAdvice}</span>
-      </div>` : ''}
-
-      <div style="text-align:center; margin-top:15px;">
-        <button onclick="retryImageUpload()" style="background:white; color:${mainColor}; border:2px solid ${mainColor}; padding:10px 20px; border-radius:25px; font-size:16px; font-weight:bold; cursor:pointer;">📸 צלם שוב</button>
-      </div>
-    </div>`;
-}
-
-function updateTopicScores() {
-  let stats = { fractions:{t:0,c:0}, natural:{t:0,c:0}, geometry:{t:0,c:0} };
-  sessionQueue.forEach(q => {
-    if(stats[q.topic]) {
-      stats[q.topic].t++;
-      if(q.userIsCorrect) stats[q.topic].c++;
-    }
-  });
-  ['fractions','natural','geometry'].forEach(t => {
-    if(stats[t].t > 0) {
-      let pct = Math.round((stats[t].c / stats[t].t) * 100);
-      if(isDiagnostic) { state.initialScores[t] = pct; state.currentScores[t] = pct; }
-      else state.currentScores[t] = Math.round((state.currentScores[t] * 2 + pct) / 3);
-      const lvl = state.currentScores[t] > 85 ? 3 : (state.currentScores[t] > 55 ? 2 : 1);
-      state.level[t] = lvl;
-      if(isDiagnostic) state.initialLevel[t] = lvl;
-    }
-  });
-}
-
-function finishSession() {
-  const pct = Math.round((sessionStats.correct / sessionStats.total) * 100);
-  const min = Math.max(1, Math.floor((Date.now() - sessionStats.startTime) / 60000));
-  updateTopicScores();
-  if(isDiagnostic) {
-    state.testCompleted = true;
-    saveState();
-    generateTrainingPlan();
-    saveState();
-    root.innerHTML = `
-      <div style="text-align:center; padding:20px;">
-        <h2 style="font-size: 36px; color: #1a1a1a;">סיימנו מוקדמות! ⏱</h2>
-        <p style="font-size: 28px; font-weight:bold; margin: 20px 0;">אחוז הצלחה: ${pct}%</p>
-        <p style="font-size: 20px; margin-bottom: 30px;">המאמן ניתח את הנתונים ותוכנית האימונים שלך מוכנה!</p>
-        <button class="btn-large btn-orange" style="font-size:26px; padding:18px 40px;" onclick="renderMenu()">קדימה לתוכנית! 🏠</button>
-      </div>`;
-    return;
-  }
-  if(isDailySession) {
-    state.plan.lastSessionDate = new Date().toISOString().split('T')[0];
-    state.plan.currentDay++;
-    saveState();
-    root.innerHTML = `
-      <div style="text-align:center; padding:20px; background:#f0fff4; border-radius:25px; border:4px solid #28a745;">
-        <h2 style="font-size: 32px; color: #1a1a1a; margin:0 0 15px 0;">🎉 סיימת את האימון של היום! 🏀</h2>
-        <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px; margin-bottom:20px;">
-          <div style="font-size:20px; margin-bottom:8px;">✅ <strong>נכון:</strong> ${sessionStats.correct}/${sessionStats.total} (${pct}%)</div>
-          <div style="font-size:20px; margin-bottom:8px;">⏱️ <strong>זמן:</strong> ${min} דק'</div>
-          <div style="font-size:20px; margin-bottom:8px;">🏆 <strong>ניקוד:</strong> +${sessionStats.correct * 10}</div>
-          <div style="font-size:20px;">🔥 <strong>רצף:</strong> ${state.streak}</div>
+      ${analysis.mistakeFound && analysis.mistakeLocation ? `
+        <div style="background:#FFE4E4; padding:12px; border-radius:10px; margin-top:10px; border-right:4px solid #DC143C;">
+          <strong>🎯 איפה הטעות:</strong><br>${analysis.mistakeLocation}
         </div>
-        <h3 style="font-size: 24px; color:#28a745; margin-bottom: 20px;">🎯 ${state.name}, אתה אלוף!<br>לך תיהנה - משוחרר! 👋</h3>
-        <button class="btn-large btn-black" style="font-size:22px;" onclick="renderMenu()">חזרה למסך הראשי</button>
-      </div>`;
-    return;
-  }
-  saveState();
-  root.innerHTML = `
-    <div style="text-align:center; padding:20px;">
-      <h2 style="font-size: 32px; color: #1a1a1a;">הבאזר צלצל! ⏱</h2>
-      <div style="font-size: 70px; margin: 15px 0;">${pct >= 80 ? '🏆 MVP' : pct >= 50 ? '🏅' : '💪'}</div>
-      <p style="font-size: 26px; font-weight:bold; margin-bottom: 8px;">${sessionStats.correct}/${sessionStats.total} זריקות</p>
-      <p style="font-size: 22px; color: #FF6B35; margin-bottom: 25px;">אחוז הצלחה: ${pct}%</p>
-      <button class="btn-large btn-orange" style="font-size:26px; padding:18px 40px;" onclick="renderMenu()">חזרה לספסל 🏠</button>
-    </div>`;
-}
+      ` : ''}
 
-function renderReport() {
-  const today = new Date();
-  const examD = state.plan ? new Date(state.plan.examDate) : new Date();
-  const diffDays = Math.ceil((examD - today) / (1000*60*60*24));
-  const getChange = (t) => {
-    const init = state.initialScores[t] || 0;
-    const cur = state.currentScores[t] || 0;
-    const diff = cur - init;
-    const color = diff > 0 ? '#28a745' : '#666';
-    const sign = diff > 0 ? '+' : '';
-    return `<strong>${init}% ➡ ${cur}%</strong> <span style="color:${color}; font-weight:bold;">(${sign}${diff}%)</span>`;
-  };
-  root.innerHTML = `
-    <div style="display:flex; justify-content:space-between; margin-bottom:18px; align-items:center; flex-wrap:wrap; gap:10px;">
-      <h2 style="font-size: 28px; color:#1a1a1a; margin:0;">📊 ${state.name}</h2>
-      <button class="btn-large btn-white" style="padding:10px 20px; font-size:18px; min-height:50px;" onclick="renderMenu()">חזור ↩</button>
-    </div>
-    <div style="background:#fff5f0; padding:15px; border-radius:15px; border:2px solid #FF6B35; margin-bottom:18px;">
-      <h3 style="margin:0; font-size:20px;">📅 ימים עד המבחן: <span style="color:#FF6B35; font-size:28px;">${diffDays > 0 ? diffDays : 0}</span></h3>
-      <h3 style="margin:8px 0 0 0; font-size:20px;">✅ סשנים: <span style="color:#28a745;">${state.plan ? state.plan.currentDay-1 : 0}</span>/${state.plan ? state.plan.trainingPlan.length : 0}</h3>
-    </div>
-    <div style="display:flex; gap:15px; margin-bottom:18px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:140px; background:#fff; padding:20px; border-radius:20px; text-align:center; border:3px solid #1a1a1a; box-shadow:0 5px 0 #1a1a1a;">
-        <div style="font-size:48px; color:#1a1a1a; font-weight:900;">${state.score}</div>
-        <div style="font-size:18px; color:#666; font-weight:bold;">נקודות בקריירה</div>
+      ${analysis.correctApproach ? `
+        <div style="background:#E3F2FD; padding:12px; border-radius:10px; margin-top:10px; border-right:4px solid #1976d2;">
+          <strong>💡 איך עדיף לפתור:</strong><br>${analysis.correctApproach}
+        </div>
+      ` : ''}
+
+      <div style="background:${mainColor}; color:white; padding:14px; border-radius:12px; margin-top:12px;">
+        <strong>🏀 המאמן אומר:</strong><br>
+        ${analysis.coachFeedback || 'כל הכבוד!'}
       </div>
-      <div style="flex:1; min-width:140px; background:#fff; padding:20px; border-radius:20px; text-align:center; border:3px solid #FF6B35; box-shadow:0 5px 0 #FF6B35;">
-        <div style="font-size:48px; color:#FF6B35; font-weight:900;">${state.streak} 🔥</div>
-        <div style="font-size:18px; color:#666; font-weight:bold;">רצף קליעות</div>
+
+      ${analysis.nextTimeAdvice ? `
+        <div style="background:white; padding:10px; border-radius:10px; margin-top:8px;">
+          <strong>🎯 טיפ לפעם הבאה:</strong> ${analysis.nextTimeAdvice}
+        </div>
+      ` : ''}
+
+      <div style="display:flex; gap:10px; margin-top:14px;">
+        <button class="btn btn-primary" style="flex:2;" onclick="closeImageAnalysis()">
+          ${currentSession.currentIndex + 1 >= currentSession.questions.length ? '🏆 סיים אימון' : 'לתרגיל הבא ➡'}
+        </button>
+        <button class="btn btn-secondary" style="flex:1;" onclick="document.getElementById('imageAnalysisResult').innerHTML='';">📸 צלם שוב</button>
       </div>
     </div>
-    <div style="background:#fff; border:3px solid #1a1a1a; border-radius:20px; padding:18px; margin-bottom:18px;">
-      <h3 style="margin:0 0 12px 0; font-size:22px;">📈 התקדמות מאז האבחון:</h3>
-      <div style="font-size:18px; margin-bottom:8px;">🍕 שברים: ${getChange('fractions')}</div>
-      <div style="font-size:18px; margin-bottom:8px;">🔢 מספרים: ${getChange('natural')}</div>
-      <div style="font-size:18px;">📐 גיאומטריה: ${getChange('geometry')}</div>
-    </div>
-    <button class="btn-large btn-red" style="width:100%;" onclick="if(confirm('בטוח לאפס הכל?')){localStorage.removeItem('basketMathChampionsV5');location.reload();}">🔄 אפס נתונים ותוכנית</button>
   `;
 }
 
-loadState();
-if(state.name) {
-  if(!state.plan) renderPlanSetup();
-  else renderMenu();
-} else renderLogin();
-updateHeader();
+function closeImageAnalysis() {
+  // סמן כאילו ענה נכון אם המאמן אמר שזה נכון
+  const q = currentSession.questions[currentSession.currentIndex];
+  // נשתמש בתשובה הנכונה לקדם
+  const isCorrect = $('#imageAnalysisResult').innerHTML.includes('סל!');
+  finalizeAnswer(isCorrect, '(פתרון בכתב יד)');
+}
 
+// ============================================================
+// 📚 TOPIC PRACTICE
+// ============================================================
+function renderTopicPractice() {
+  const plan = getActivePlan();
+  render(`
+    ${renderHeader()}
+    <h2 style="text-align:center;">📚 תרגול לפי נושא</h2>
+    <p style="text-align:center; color:#666;">בחר נושא לתרגול</p>
+    <div>
+      ${plan.topics.map(t => {
+        const qCount = (plan.questionsByTopic[t.id] || []).length;
+        const score = plan.stats.topicScores?.[t.id] || 0;
+        return `
+          <div class="card" style="cursor:pointer;" onclick="startTopicPractice('${t.id}')">
+            <h3>${t.name}</h3>
+            ${t.nameInOriginalLanguage && t.nameInOriginalLanguage !== t.name ? `<div class="english-text" style="color:#666;">${t.nameInOriginalLanguage}</div>` : ''}
+            <div style="color:#666; font-size:14px;">
+              ${t.subtopics.slice(0,3).join(' • ')}
+            </div>
+            <div style="margin-top:8px; font-size:13px;">
+              🎯 <span class="num">${qCount}</span> שאלות זמינות
+              ${score > 0 ? ` | 🏆 ציון אחרון: <span class="num">${score}</span>%` : ''}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+    <button class="btn btn-secondary btn-full" style="margin-top:14px;" onclick="renderMainMenu()">⬅ חזרה</button>
+  `);
+}
+
+function startTopicPractice(topicId) {
+  const plan = getActivePlan();
+  const qs = (plan.questionsByTopic[topicId] || []).slice().sort(() => Math.random() - 0.5).slice(0, 10);
+  if (qs.length === 0) { alert('אין שאלות לנושא הזה'); return; }
+  const topic = plan.topics.find(t => t.id === topicId);
+
+  currentSession = {
+    sessionDef: {
+      day: -1, // לא חלק מהתוכנית
+      title: `תרגול: ${topic.name}`,
+      phase: 'תרגול חופשי 🎯',
+      questionsCount: qs.length,
+      isPractice: true
+    },
+    questions: qs.map(q => ({ ...q, topicId })),
+    currentIndex: 0,
+    correctCount: 0,
+    startTime: Date.now(),
+    answers: []
+  };
+  renderSessionStart();
+}
+
+// ============================================================
+// 🎲 MIXED PRACTICE
+// ============================================================
+function renderMixedPractice() {
+  const plan = getActivePlan();
+  const allQs = [];
+  for (const tid of Object.keys(plan.questionsByTopic)) {
+    allQs.push(...(plan.questionsByTopic[tid] || []).map(q => ({ ...q, topicId: tid })));
+  }
+  if (allQs.length === 0) { alert('אין שאלות בתוכנית'); return; }
+  const selected = allQs.sort(() => Math.random() - 0.5).slice(0, 10);
+
+  currentSession = {
+    sessionDef: { day: -1, title: 'תרגול מעורב', phase: 'אקראי מכל הנושאים 🎲', questionsCount: selected.length, isPractice: true },
+    questions: selected,
+    currentIndex: 0,
+    correctCount: 0,
+    startTime: Date.now(),
+    answers: []
+  };
+  renderSessionStart();
+}
+
+// ============================================================
+// 📊 STATS
+// ============================================================
+function renderStats() {
+  const plan = getActivePlan();
+  const student = getActiveStudent();
+  const completed = Object.values(plan.completedSessions || {});
+  const totalScore = completed.reduce((sum, s) => sum + (s.score || 0), 0);
+  const totalCorrect = completed.reduce((sum, s) => sum + (s.correctCount || 0), 0);
+  const totalQs = completed.reduce((sum, s) => sum + (s.totalQuestions || 0), 0);
+  const avgPercent = totalQs > 0 ? Math.round((totalCorrect / totalQs) * 100) : 0;
+  const examDate = new Date(plan.examDate);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const daysLeft = Math.max(0, Math.ceil((examDate - today) / (1000 * 60 * 60 * 24)));
+
+  render(`
+    ${renderHeader()}
+    <div class="card card-highlight" style="text-align:center;">
+      <div style="font-size:60px;">👑</div>
+      <h2>MVP: ${student.name}</h2>
+      <div style="font-size:14px; opacity:0.9;">${plan.name}</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:40px;">📅</div>
+        <h3><span class="num">${daysLeft}</span> ימים</h3>
+        <div style="color:#666; font-size:13px;">עד המבחן</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:40px;">🔥</div>
+        <h3><span class="num">${plan.stats.streak || 0}</span></h3>
+        <div style="color:#666; font-size:13px;">רצף הצלחה</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:40px;">🏆</div>
+        <h3><span class="num">${totalScore}</span></h3>
+        <div style="color:#666; font-size:13px;">נקודות סה"כ</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:40px;">🎯</div>
+        <h3><span class="num">${avgPercent}</span>%</h3>
+        <div style="color:#666; font-size:13px;">ממוצע הצלחה</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📈 התקדמות בתוכנית</h3>
+      <div>סיימת <span class="num">${completed.length}</span> מתוך <span class="num">${plan.trainingPlan.length}</span> סשנים</div>
+      <div class="progress-bar" style="margin-top:8px;">
+        <div class="progress-fill" style="width:${Math.round((completed.length / plan.trainingPlan.length) * 100)}%"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary btn-full" style="margin-top:14px;" onclick="renderMainMenu()">⬅ חזרה</button>
+  `);
+}
+
+// ============================================================
+// ⚙️ SETTINGS
+// ============================================================
+function showSettings() {
+  render(`
+    ${renderHeader()}
+    <h2>⚙️ הגדרות</h2>
+    <div class="card">
+      <button class="btn btn-secondary btn-full" onclick="renderPlanList()">📚 ניהול תוכניות</button>
+      <button class="btn btn-secondary btn-full" style="margin-top:10px;" onclick="showStudentSelector()">👨‍👩‍👧 ניהול תלמידים</button>
+      <button class="btn btn-danger btn-full" style="margin-top:10px;" onclick="confirmReset()">🗑️ אפס את כל הנתונים</button>
+    </div>
+    <button class="btn btn-primary btn-full" style="margin-top:14px;" onclick="renderMainMenu()">⬅ חזרה</button>
+  `);
+}
+
+function confirmReset() {
+  if (confirm('האם למחוק את כל הנתונים? אי אפשר לבטל!')) {
+    localStorage.removeItem('studyTrainerV2');
+    state = { ...DEFAULT_STATE };
+    start();
+  }
+}
+
+// ============================================================
+// 🚀 BOOTSTRAP
+// ============================================================
+window.addEventListener('load', start);
 </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
