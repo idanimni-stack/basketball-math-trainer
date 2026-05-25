@@ -1,0 +1,20 @@
+{
+  "name": "basketball-math-trainer-backend",
+  "version": "1.0.0",
+  "description": "Backend for basketball math trainer app with Gemini Vision AI",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.5.0",
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
